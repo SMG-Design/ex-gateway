@@ -1,37 +1,97 @@
-## Welcome to GitHub Pages
+# Extream Gateway
 
-You can use the [editor on GitHub](https://github.com/Extream-SaaS/ex-gateway/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+Websocket based Gateway for all activities. This includes Admin CRUD, Client Management Portal and Consumer Applications.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+This gateway is intended to be consumed by our JavaScript Browser SDK, Wordpress Plugin and Node.JS SDK.
 
-### Markdown
+## Extream handles groupings with the following separation
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+1. Organisation - an organisation can host multiple events
+1. Event - an event can run multiple itineraries (over multiple days)
+1. User Group - a user group belongs to an organisation
+1. User Permissions - permissions are applied to a user group
+1. User - a user belongs to many groups, across multiple organisations
+1. Itinerary - an itinerary has a start and end date/time and is the home of multiple itinerary items
+1. Itinerary Item - an itinerary item has a start and end date/time and belongs to an itinerary
 
-```markdown
-Syntax highlighted code block
+## Itinerary Item Types
 
-# Header 1
-## Header 2
-### Header 3
+We support the following types of itinerary items
+1. RTMP Live stream (streamed into our RTMP servers and URL delivered via the Gateway to the RTMP server)
+1. Zoom video call (with participant criteria)
+1. WebRTC video call (with participant criteria)
+1. Video playback (video upload and URL delivered via the Gateway to the Content server)
+1. Forum (moderators and participants)
+1. Chat room (moderators and participants)
+1. HTML (direct upload of third-party content such as Cisco Webex)
 
-- Bulleted
-- List
+## Gateway Communication
 
-1. Numbered
-2. List
+### Security
 
-**Bold** and _Italic_ and `Code` text
+The socket connection is authenticated using an oauth2 authorization code. This can be obtained from https://api.extream.io/oauth2/authorize
 
-[Link](url) and ![Image](src)
+Set the `userToken` based on the users localStorage or the oauth2 authorization code if null. Get the users status and display a login form if required.
+
+An example authenticated process assuming using socket.io:
+```javascript
+const userToken = localStorage.getItem('ex-authentication') || `YOUR_ACCESS_TOKEN`;
+const socket = io('https://gateway.extream.io', {
+  transports: ['websocket']
+});
+// Socket connected
+socket.on('connect', onConnect);
+// Socket got disconnected
+socket.on('disconnect', onDisconnect);
+// Socket is authenticated
+socket.on('authenticated', onAuthenticated);
+function onConnect() {
+  console.log('Successfully connected to the ex-gateway');
+  socket.emit('authenticate', { method: 'oauth2', token: userToken });
+}
+function onDisconnect() {
+  console.log('Disconnected from ex-gateway');
+  // Reconnect
+}
+function onAuthenticated(data) {
+  const {
+    organisationId,
+    authStatus
+  } = data;
+  console.log(`Successfully connected to organisation ${organisationId} and current users status is: ${authStatus}`);
+  if (authStatus === 'unauthorized') {
+    // Show user login process and request username and password. Trigger the 'login' event on form submission. We support Multi-Factor Auth.
+  }
+}
+function doLogin({ username, password }) {
+  socket.on('mfa', onMFA);
+  socket.on('authorized', onAuthorized);
+  socket.on('unauthorized', onUnauthorized);
+  socket.emit('login', { username, password });
+}
+function doMFA(code) {
+  // emitting mfa will return either authorized or unauthorized, as setup during doLogin.
+  socket.emit('mfa', { code };
+}
+function onMFA(data) {
+  const {
+    mfaSubject,
+    mfaBody,
+    mfaTooltip
+  } = data;
+  // Show HTML form containing mfaSubject, mfaBody and mfaTooltip
+}
+function onUnauthorized(error) {
+  console.log(`An error occurred during login: ${error}`);
+}
+function onAuthorized(data) {
+  const {
+    userId,
+    groups
+  } = data;
+  console.log(`User logged in with User ID: ${userId}`);
+}
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+### Commands
 
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Extream-SaaS/ex-gateway/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
