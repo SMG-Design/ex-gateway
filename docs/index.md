@@ -1,4 +1,4 @@
-# (Extream Gateway)[index.html]
+# [Extream Gateway](index.html)
 
 Websocket based Gateway for all activities. This includes Admin CRUD, Client Management Portal and Consumer Applications.
 
@@ -97,7 +97,7 @@ function onAuthorized(data) {
 
 ## Commands
 
-* (Admin)[admin.html]
-* (Security)[security.html]
-* (Client)[client.html]
-* (Consumer)[consumer.html]
+* [Admin](admin.html)
+* [Security](security.html)
+* [Client](client.html)
+* [Consumer](consumer.html)
