@@ -33,6 +33,8 @@ The socket connection is authenticated using an oauth2 authorization code. This 
 
 Set the `userToken` based on the users localStorage or the oauth2 authorization code if null. Get the users status and display a login form if required.
 
+In the meta of a response to any command, you will have information whether the command requires login. If no login is required, the oauth2 authorization code will be enough.
+
 An example authenticated process assuming using socket.io:
 ```javascript
 const userToken = localStorage.getItem('ex-authentication') || `YOUR_ACCESS_TOKEN`;
@@ -92,6 +94,3 @@ function onAuthorized(data) {
   console.log(`User logged in with User ID: ${userId}`);
 }
 ```
-
-### Commands
-
