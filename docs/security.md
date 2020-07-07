@@ -1,5 +1,11 @@
 # Security
 
+* (Extream Gateway)[index.html]
+* (Admin)[admin.html]
+* (Security)[security.html]
+* (Client)[client.html]
+* (Consumer)[consumer.html]
+
 ### Meta response payload
 
 If a request requires authorization and it is not provided, the response will simply contain a meta object that outlines the requirements for accessing the requested item.
