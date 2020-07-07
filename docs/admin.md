@@ -1,10 +1,10 @@
 # Admin
 
-* (Extream Gateway)[index.html]
-* (Admin)[admin.html]
-* (Security)[security.html]
-* (Client)[client.html]
-* (Consumer)[consumer.html]
+* [Extream Gateway](index.html)
+* [Admin](admin.html)
+* [Security](security.html)
+* [Client](client.html)
+* [Consumer](consumer.html)
 
 The admin section documents all commands available for CRUD tasks.
 

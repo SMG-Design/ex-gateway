@@ -1,10 +1,10 @@
 # Security
 
-* (Extream Gateway)[index.html]
-* (Admin)[admin.html]
-* (Security)[security.html]
-* (Client)[client.html]
-* (Consumer)[consumer.html]
+* [Extream Gateway](index.html)
+* [Admin](admin.html)
+* [Security](security.html)
+* [Client](client.html)
+* [Consumer](consumer.html)
 
 ### Meta response payload
 
