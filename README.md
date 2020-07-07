@@ -4,7 +4,7 @@ Websocket based Gateway for all activities. This includes Admin CRUD, Client Man
 
 This gateway is intended to be consumed by our JavaScript Browser SDK, Wordpress Plugin and Node.JS SDK.
 
-(Full documentation is available.)[https://docs.extream.app]
+[Full documentation is available.](https://docs.extream.app)
 
 ## Extream handles groupings with the following separation
 
