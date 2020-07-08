@@ -618,3 +618,256 @@ This section is used for CRUD tasks relating to an event itinerary
   }
 }
 ```
+
+### Itinerary Items
+
+This section is used for CRUD tasks relating to an event itinerary items
+
+*Send*
+`admin_item_create` - Create a new itinerary item.
+*Payload*
+```JSON
+{
+  "title": "string|required|2-250",
+  "startDate": "datetime|optional",
+  "endDate": "datetime|optional",
+  "itinerary": "uuid|required",
+  "landingPage": "uuid|optional",
+  "type": "enum|item_types|required",
+  "configuration": item_type_config
+}
+```
+
+_item_types_
+* rtmp
+* zoom
+* webrtc
+* video
+* forum
+* chat
+* html
+
+_item_type_config_
+* rtmp
+```JSON
+{
+  "source_url": "url|optional"
+}
+```
+* zoom
+```JSON
+{
+  "meeting_id": "string|required"
+}
+```
+* webrtc
+```JSON
+{
+  "moderators": ["uuid|required"]
+}
+```
+* video
+```JSON
+{
+  "url": "string|required"
+}
+```
+* forum
+```JSON
+{
+  "moderators": ["uuid|required"]
+}
+```
+* chat
+```JSON
+{
+  "moderators": ["uuid|required"],
+  "max_rooms": integer,
+  "max_members": integer
+}
+```
+* html
+```JSON
+{
+  "source_code": "string|required"
+}
+```
+*Receive*
+`admin_itinerary_create`
+*Successful Payload*
+```JSON
+{
+  "status": 201,
+  "meta": {
+    "permitted": true,
+    "message": "created"
+  },
+  "response": {
+    "id": "uuid",
+    "slug": "string"
+  }
+}
+```
+
+*Unsuccessful Payload*
+```JSON
+{
+  "status": 400,
+  "meta": {
+    "permitted": true,
+    "message": "bad_request"
+  },
+  "response": {
+    "errors": [ "string" ]
+  }
+}
+```
+
+*Send*
+`admin_itinerary_read` - Retrieve 1 or many itineraries.
+*Payload*
+```JSON
+{
+  "id": "uuid|optional",
+  "organisation": "uuid|optional",
+  "event": "uuid|optional",
+  "startDate": "datetime|optional",
+  "endDate": "datetime|optional"
+}
+```
+*Receive*
+`admin_itinerary_read`
+*Successful Payload - Many*
+```JSON
+{
+  "status": 200,
+  "meta": {
+    "permitted": true,
+    "items": 2,
+    "page": 1
+  },
+  "response": [
+    {
+      "id": "uuid",
+      "slug": "string",
+      "name": "string",
+      "website": "string",
+      "startDate": "datetime",
+      "endDate": "datetime",
+      "event": "uuid",
+      "landingPage": "uuid"
+    },
+    ...
+  ]
+}
+```
+
+*Successful Payload - Single*
+```JSON
+{
+  "status": 200,
+  "meta": {
+    "permitted": true,
+    "items": 1,
+    "page": 1
+  },
+  "response": {
+    "id": "uuid",
+    "slug": "string",
+    "name": "string",
+    "website": "string",
+    "startDate": "datetime",
+    "endDate": "datetime",
+    "event": "uuid",
+    "landingPage": "uuid"
+  }
+}
+```
+
+*Unsuccessful Payload*
+```JSON
+{
+  "status": 404,
+  "meta": {
+    "permitted": true,
+    "message": "not_found"
+  }
+}
+```
+
+*Send*
+`admin_itinerary_update` - Update an existing itinerary.
+*Payload*
+```JSON
+{
+  "id": "uuid|required",
+  "name": "string|optional|2-250",
+  "website": "string|optional|5-250",
+  "startDate": "datetime|optional",
+  "endDate": "datetime|optional",
+  "event": "uuid|optional",
+  "landingPage": "uuid|optional"
+}
+```
+*Receive*
+`admin_itinerary_update`
+*Successful Payload*
+```JSON
+{
+  "status": 200,
+  "meta": {
+    "permitted": true,
+    "message": "updated"
+  },
+  "response": {
+    "id": "uuid",
+    "slug": "string"
+  }
+}
+```
+
+*Unsuccessful Payload*
+```JSON
+{
+  "status": 400,
+  "meta": {
+    "permitted": true,
+    "message": "bad_request"
+  },
+  "response": {
+    "errors": [ "string" ]
+  }
+}
+```
+
+*Send*
+`admin_itinerary_delete` - Delete an itinerary.
+*Payload*
+```JSON
+{
+  "id": "uuid|required"
+}
+```
+*Receive*
+`admin_itinerary_delete`
+*Successful Payload*
+```JSON
+{
+  "status": 200,
+  "meta": {
+    "permitted": true,
+    "message": "deleted"
+  }
+}
+```
+
+*Unsuccessful Payload*
+```JSON
+{
+  "status": 404,
+  "meta": {
+    "permitted": true,
+    "message": "not_found"
+  }
+}
+```
