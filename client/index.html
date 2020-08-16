@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+  <head>
+    <title>EX-Gateway script tester</title>
+    <style>
+    .textarea {
+      width: 80%;
+      height: 40vh;
+    }
+    </style>
+  </head>
+  <body>
+    <h1>EX-Gateway command list and tester</h1>
+    <ul>
+      <li><a href="#" class="action" onclick="actionClick(this)">Register Attendee</a><input type="hidden" name="action" value="register" /><input type="hidden" name="payload" value='{
+        "username": "string|optional",
+        "password": "string|optional",
+        "confirm_password": "string|optional",
+        "grant_type": "password",
+        "client_id": null,
+        "user_type": "audience",
+        "user": {
+          "custom": "fields"
+        }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Login Attendee</a><input type="hidden" name="action" value="login" /><input type="hidden" name="payload" value='{
+        "username": "string|optional",
+        "password": "string|optional",
+        "grant_type": "password",
+        "client_id": null,
+      }' /></li>
+    </ul>
+    <h3>Action: <span id="action" /></h3>
+    <textarea id="payload" class="textarea"></textarea>
+    <div id="response"></div>
+    <input type="button" id="submit" value="Send request" />
+    <script src="node_modules/socket.io-client/dist/socket.io.js"></script>
+    <script>
+      const socket = io('http://localhost:8880');
+      const actionClick = (el) => {
+        const action = el.nextSibling.value;
+        const payload = el.nextSibling.nextSibling.value;
+        document.getElementById('action').innerHTML = action;
+        document.getElementById('payload').value = JSON.stringify(JSON.parse(payload), null, 2);
+      };
+      const displayResp = (data) => {
+        document.getElementById('response').innerHTML = JSON.stringify(data, null, 2);
+      };
+      document.getElementById('submit').addEventListener('click', () => {
+        socket.on(`${document.getElementById('action').innerHTML}_success`, displayResp);
+        socket.on(`${document.getElementById('action').innerHTML}_error`, displayResp);
+        socket.emit(document.getElementById('action').innerHTML, JSON.parse(document.getElementById('payload').value));
+      });
+    </script>
+  </body>
+</html>

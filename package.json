@@ -1,0 +1,31 @@
+{
+  "name": "exgateway",
+  "version": "1.0.0",
+  "description": "Websocket based Gateway for all activities. This includes Admin CRUD, Client Management Portal and Consumer Applications.",
+  "main": "server.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SMG-Design/ex-gateway.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SMG-Design/ex-gateway/issues"
+  },
+  "homepage": "https://github.com/SMG-Design/ex-gateway#readme",
+  "dependencies": {
+    "@google-cloud/pubsub": "^2.3.0",
+    "axios": "^0.19.2",
+    "express": "^4.17.1",
+    "grpc": "^1.24.3",
+    "socket.io": "^2.3.0"
+  }
+}
