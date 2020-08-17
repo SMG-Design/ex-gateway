@@ -27,7 +27,7 @@
         "username": "string|optional",
         "password": "string|optional",
         "grant_type": "password",
-        "client_id": null,
+        "client_id": null
       }' /></li>
     </ul>
     <h3>Action: <span id="action" /></h3>
@@ -51,6 +51,9 @@
         socket.on(`${document.getElementById('action').innerHTML}_error`, displayResp);
         socket.emit(document.getElementById('action').innerHTML, JSON.parse(document.getElementById('payload').value));
       });
+      socket.on(`authorized`, displayResp);
+      socket.on(`unauthorized`, displayResp);
+      socket.on(`mfa`, displayResp);
     </script>
   </body>
 </html>

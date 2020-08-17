@@ -88,22 +88,22 @@ io.on('connection', (socket) => {
     const params = {
       username,
       password,
-      client_id: null,
+      client_id: 'null',
+      client_secret: 'null',
       grant_type: 'password'
     };
     // auth does a REST request, not queue managed as it needs instant response
     const exauthLogin = await axios.post('http://localhost:8888/auth/login', qs.stringify(params), config);
-    console.log(exauthLogin);
-    if (exauthLogin.status === 200 && exauthLogin.body) {
-      
+    if (exauthLogin.status === 200 && exauthLogin.data && exauthLogin.data.status === 'mfa') {
+      // if mfa is enabled, return: 'mfa'
+      io.emit('mfa', exauthLogin.data);
+    } else if (exauthLogin.status === 200 && exauthLogin.data) {
+      // if success, return: 'authorized'
+      io.emit('authorized', exauthLogin.data);
+    } else {
+      // if failure, return: 'unauthorized'
+      io.emit('unauthorized', exauthLogin.data);
     }
-
-    // if success, return: 'authorized'
-    io.emit('authorized', data);
-    // if mfa is enabled, return: 'mfa'
-    io.emit('mfa', data);
-    // if failure, return: 'unauthorized'
-    io.emit('unauthorized', data);
   });
 });
 
