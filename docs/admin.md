@@ -22,7 +22,7 @@ This section is used for CRUD tasks relating to an organisation
 ```JSON
 {
   "name": "string|required|2-250",
-  "website": "string|optional|5-250",
+  "website": "string|optional|4-250",
   "primary_contact": {
     "id": "uuid|optional",
     "first_name": "string|optional|2-20",

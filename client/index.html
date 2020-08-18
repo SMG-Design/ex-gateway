@@ -25,22 +25,9 @@
     </form>
     <pre id="authResponse"></pre>
     <ul>
-      <li><a href="#" class="action" onclick="actionClick(this)">Register Attendee</a><input type="hidden" name="action" value="register" /><input type="hidden" name="payload" value='{
-        "username": "string|optional",
-        "password": "string|optional",
-        "confirm_password": "string|optional",
-        "grant_type": "password",
-        "client_id": null,
-        "user_type": "audience",
-        "user": {
-          "custom": "fields"
-        }
-      }' /></li>
-      <li><a href="#" class="action" onclick="actionClick(this)">Login Attendee</a><input type="hidden" name="action" value="login" /><input type="hidden" name="payload" value='{
-        "username": "string|optional",
-        "password": "string|optional",
-        "grant_type": "password",
-        "client_id": null
+      <li><a href="#" class="action" onclick="actionClick(this)">Authorize User</a><input type="hidden" name="action" value="authorize" /><input type="hidden" name="payload" value='{
+        "method": "oauth2",
+        "token": "userToken"
       }' /></li>
       <li><a href="#" class="action" onclick="actionClick(this)">Create organisation</a><input type="hidden" name="action" value="admin_organisation_create" /><input type="hidden" name="payload" value='{
         "name": "string|required|2-250",
@@ -60,6 +47,7 @@
     <input type="button" id="submit" value="Send request" />
     <script src="node_modules/socket.io-client/dist/socket.io.js"></script>
     <script>
+      let socket;
       const envs = {
         local: {
           auth: "http://localhost:8881",
@@ -85,6 +73,7 @@
           client_id: 'null',
           client_secret: 'null'
         };
+        socket = io.connect(env.gateway);
         const auth = await fetch(`${env.auth}/auth/login`, {
           method: 'POST',
           headers: {
@@ -97,9 +86,10 @@
           if (resp.access_token) {
             env.access_token = resp.access_token;
             document.getElementById('authResponse').innerHTML = JSON.stringify(resp, null, 2);
-            const socket = io(env.gateway, {
-              query: env.access_token
-            });
+            socket.emit(`authorize`, { method: 'oauth2', token: env.access_token });
+            socket.on(`authorized`, displayResp);
+            socket.on(`unauthorized`, displayResp);
+            socket.on(`mfa`, displayResp);
           }
         } catch (error) {
           document.getElementById('authResponse').innerHTML = error;
@@ -115,13 +105,9 @@
         document.getElementById('response').innerHTML = JSON.stringify(data, null, 2);
       };
       document.getElementById('submit').addEventListener('click', () => {
-        socket.on(`${document.getElementById('action').innerHTML}_success`, displayResp);
-        socket.on(`${document.getElementById('action').innerHTML}_error`, displayResp);
+        socket.on(`${document.getElementById('action').innerHTML}`, displayResp);
         socket.emit(document.getElementById('action').innerHTML, JSON.parse(document.getElementById('payload').value));
       });
-      socket.on(`authorized`, displayResp);
-      socket.on(`unauthorized`, displayResp);
-      socket.on(`mfa`, displayResp);
     </script>
   </body>
 </html>

@@ -1,3 +1,4 @@
+require('dotenv').config();
 // Imports the Google Cloud client library
 const {PubSub} = require('@google-cloud/pubsub');
 const grpc = require('grpc');
@@ -6,108 +7,133 @@ const app = require('express')();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const axios = require('axios');
-const qs = require('querystring');
 const exauthURL = process.env.EXAUTH;
 
 const rooms = {};
 
-async function push(
-  topicName = 'ex-streamer',
-  data = JSON.stringify({foo: 'bar'})
+const actions = {
+  admin: {
+    organisation: {
+      create: {
+        topic: 'ex-manage',
+        acl: ['organisation:create'],
+        validation: {
+          name: ['string', 'required', 2, 250],
+          website: ['string', 'optional', 4, 250],
+          primary_contact: ['object', 'required'],
+          parent: ['uuid', 'optional'],
+          landing_page: ['uuid', 'optional']
+        }
+      },
+      update: {
+        topic: 'ex-manage',
+        acl: ['organisation:edit'],
+        validation: {
+          id: ['uuid', 'required'],
+          name: ['string', 'optional', 2, 250],
+          website: ['string', 'optional', 4, 250],
+          primary_contact: ['object', 'optional'],
+          parent: ['uuid', 'optional'],
+          landing_page: ['uuid', 'optional']
+        }
+      }
+    },
+    event: {
+      create: {
+        topic: 'ex-manage',
+        acl: ['event:create'],
+        validation: {
+          name: ['string', 'required', 2, 250],
+          website: ['string', 'optional', 4, 250],
+          start_date: ['datetime', 'required'],
+          end_date: ['datetime', 'required'],
+          organisation: ['uuid', 'required'],
+          parent: ['uuid', 'optional'],
+          landing_page: ['uuid', 'optional']
+        }
+      },
+      update: {
+        topic: 'ex-manage',
+        acl: ['event:edit'],
+        validation: {
+          id: ['uuid', 'required'],
+          name: ['string', 'optional', 2, 250],
+          website: ['string', 'optional', 4, 250],
+          start_date: ['datetime', 'optional'],
+          end_date: ['datetime', 'optional'],
+          organisation: ['uuid', 'optional'],
+          parent: ['uuid', 'optional'],
+          landing_page: ['uuid', 'optional']
+        }
+      }
+    }
+  }
+}
+
+function push(
+  topicName = 'ex-manage',
+  data = {}
 ) {
   // Instantiates a client
   const pubsub = new PubSub({grpc, projectId});
 
   async function publishMessage() {
-    const dataBuffer = Buffer.from(data);
+    const dataBuffer = Buffer.from(JSON.stringify(data));
 
     const messageId = await pubsub.topic(topicName).publish(dataBuffer);
-    console.log(`Message ${messageId} published.`);
+    return messageId;
   }
 
-  publishMessage().catch(console.error);
+  return publishMessage();
 }
 
 io.on('connection', (socket) => {
 
-  // REGISTER
-  socket.on('register', async ({
-    username,
-    password,
-    confirm_password,
-    grant_type,
-    client_id,
-    user_type,
-    user,
-    organisationId
-  }) => {
-    if (confirm_password === password) {
-      const config = {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      };
-      const params = {
-        username,
-        password,
-        client_id,
-        grant_type,
-        user_type,
-        user: JSON.stringify(user)
-      };
-      // auth does a REST request, not queue managed as it needs instant response
-      try {
-        const exauthLogin = await axios.post(`${exauthURL}/auth/register`, qs.stringify(params), config);
-        if (exauthLogin.status === 200 && exauthLogin.data) {
-          const result = exauthLogin.data.response.results.rows[0];
-          io.emit('register_success', {
-            id: result.public_id,
-            user_type: result.user_type,
-            user: result.fields,
-            status: 'requested'
-          });
-        }
-      } catch (error) {
-        io.emit('register_error', {
-          status: error.response.status,
-          ...error.response.data
-        });
+  // AUTHORIZE
+  socket.on('authorize', async ({ method, token }) => {
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${token}`
       }
-    } else {
-      io.emit('register_error', {
-        message: 'password_not_match'
-      });
+    };
+
+    if (method === 'oauth2') {
+      // need to do actual logic to verify the user here
+      try {
+        const resp = await axios.get(`${exauthURL}/auth/user`, config);
+        if (resp.status !== 200) {
+          throw new Error('not logged in');
+        }
+        const exauthUser = resp.data;
+        socket.emit('authorized', exauthUser);
+        rooms[token] = { ...exauthUser, socket };
+        socket.join(token);
+      } catch (error) {
+        console.log(error);
+        socket.emit('unauthorized', { error: error.message });
+      }
     }
   });
 
-  // LOGIN
-  socket.on('login', async ({ username, password, organisationId }) => {
-    const config = {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    };
-    const params = {
-      username,
-      password,
-      client_id: 'null',
-      client_secret: 'null',
-      grant_type: 'password'
-    };
-    // auth does a REST request, not queue managed as it needs instant response
-    const exauthLogin = await axios.post(`${exauthURL}/auth/login`, qs.stringify(params), config);
-    if (exauthLogin.status === 200 && exauthLogin.data && exauthLogin.data.status === 'mfa') {
-      // if mfa is enabled, return: 'mfa'
-      io.emit('mfa', exauthLogin.data);
-    } else if (exauthLogin.status === 200 && exauthLogin.data) {
-      // if success, return: 'authorized'
-      io.emit('authorized', exauthLogin.data);
-      rooms[exauthLogin.data.access_token] = socket;
-      socket.join(exauthLogin.data.access_token);
-    } else {
-      // if failure, return: 'unauthorized'
-      io.emit('unauthorized', exauthLogin.data);
-    }
+  // mapping table and topics outlined above, this is where we prep the listeners for the user
+  Object.keys(actions).forEach(domain => {
+    // domain = admin
+    Object.keys(actions[domain]).forEach(action => {
+      // action = organisation
+      Object.keys(actions[domain][action]).forEach(command => {
+        // command = create
+        const commandProps = actions[domain][action][command];
+        socket.on(`${domain}_${action}_${command}`, async (payload) => {
+          const { topic, validation, acl } = commandProps;
+          try {
+            const messageId = await push(topic, { action, command, payload });
+            socket.emit(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
+          } catch (error) {
+            socket.emit(`${domain}_${action}_${command}`, { status: 400, error });
+          }
+        });
+      });
+    });
   });
 });
 
