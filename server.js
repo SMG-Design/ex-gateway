@@ -7,9 +7,11 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const axios = require('axios');
 const qs = require('querystring');
-const e = require('express');
+const exauthURL = process.env.EXAUTH;
 
-async function main(
+const rooms = {};
+
+async function push(
   topicName = 'ex-streamer',
   data = JSON.stringify({foo: 'bar'})
 ) {
@@ -55,7 +57,7 @@ io.on('connection', (socket) => {
       };
       // auth does a REST request, not queue managed as it needs instant response
       try {
-        const exauthLogin = await axios.post('http://localhost:8888/auth/register', qs.stringify(params), config);
+        const exauthLogin = await axios.post(`${exauthURL}/auth/register`, qs.stringify(params), config);
         if (exauthLogin.status === 200 && exauthLogin.data) {
           const result = exauthLogin.data.response.results.rows[0];
           io.emit('register_success', {
@@ -93,13 +95,15 @@ io.on('connection', (socket) => {
       grant_type: 'password'
     };
     // auth does a REST request, not queue managed as it needs instant response
-    const exauthLogin = await axios.post('http://localhost:8888/auth/login', qs.stringify(params), config);
+    const exauthLogin = await axios.post(`${exauthURL}/auth/login`, qs.stringify(params), config);
     if (exauthLogin.status === 200 && exauthLogin.data && exauthLogin.data.status === 'mfa') {
       // if mfa is enabled, return: 'mfa'
       io.emit('mfa', exauthLogin.data);
     } else if (exauthLogin.status === 200 && exauthLogin.data) {
       // if success, return: 'authorized'
       io.emit('authorized', exauthLogin.data);
+      rooms[exauthLogin.data.access_token] = socket;
+      socket.join(exauthLogin.data.access_token);
     } else {
       // if failure, return: 'unauthorized'
       io.emit('unauthorized', exauthLogin.data);

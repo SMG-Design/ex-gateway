@@ -23,14 +23,14 @@ This section is used for CRUD tasks relating to an organisation
 {
   "name": "string|required|2-250",
   "website": "string|optional|5-250",
-  "primaryContact": {
+  "primary_contact": {
     "id": "uuid|optional",
-    "firstName": "string|optional|2-20",
-    "lastName": "string|optional|2-20",
+    "first_name": "string|optional|2-20",
+    "last_name": "string|optional|2-20",
     "email": "string|optional|4-120"
   },
   "parent": "uuid|optional",
-  "landingPage": "uuid|optional"
+  "landing_page": "uuid|optional"
 }
 ```
 *Receive*
@@ -90,14 +90,14 @@ This section is used for CRUD tasks relating to an organisation
       "slug": "string",
       "name": "string",
       "website": "string",
-      "primaryContact": {
+      "primary_contact": {
         "id": "uuid",
-        "firstName": "string",
-        "lastName": "string",
+        "first_name": "string",
+        "last_name": "string",
         "email": "string"
       },
       "parent": "uuid",
-      "landingPage": "uuid"
+      "landing_page": "uuid"
     },
     ...
   ]
@@ -118,14 +118,14 @@ This section is used for CRUD tasks relating to an organisation
     "slug": "string",
     "name": "string",
     "website": "string",
-    "primaryContact": {
+    "primary_contact": {
       "id": "uuid",
-      "firstName": "string",
-      "lastName": "string",
+      "first_name": "string",
+      "last_name": "string",
       "email": "string"
     },
     "parent": "uuid",
-    "landingPage": "uuid"
+    "landing_page": "uuid"
   }
 }
 ```
@@ -149,14 +149,14 @@ This section is used for CRUD tasks relating to an organisation
   "id": "uuid|required",
   "name": "string|optional|2-250",
   "website": "string|optional|5-250",
-  "primaryContact": {
+  "primary_contact": {
     "id": "uuid|optional",
-    "firstName": "string|optional|2-20",
-    "lastName": "string|optional|2-20",
+    "first_name": "string|optional|2-20",
+    "last_name": "string|optional|2-20",
     "email": "string|optional|4-120"
   },
   "parent": "uuid|optional",
-  "landingPage": "uuid|optional"
+  "landing_page": "uuid|optional"
 }
 ```
 *Receive*
@@ -233,11 +233,11 @@ This section is used for CRUD tasks relating to an event
 {
   "name": "string|required|2-250",
   "website": "string|optional|5-250",
-  "startDate": "datetime|required",
-  "endDate": "datetime|required",
+  "start_date": "datetime|required",
+  "end_date": "datetime|required",
   "organisation": "uuid|required",
   "parent": "uuid|optional",
-  "landingPage": "uuid|optional"
+  "landing_page": "uuid|optional"
 }
 ```
 *Receive*
@@ -278,8 +278,8 @@ This section is used for CRUD tasks relating to an event
 {
   "id": "uuid|optional",
   "organisation": "uuid|optional",
-  "startDate": "datetime|optional",
-  "endDate": "datetime|optional"
+  "start_date": "datetime|optional",
+  "end_date": "datetime|optional"
 }
 ```
 *Receive*
@@ -299,11 +299,11 @@ This section is used for CRUD tasks relating to an event
       "slug": "string",
       "name": "string",
       "website": "string",
-      "startDate": "datetime",
-      "endDate": "datetime",
+      "start_date": "datetime",
+      "end_date": "datetime",
       "organisation": "uuid",
       "parent": "uuid",
-      "landingPage": "uuid"
+      "landing_page": "uuid"
     },
     ...
   ]
@@ -324,11 +324,11 @@ This section is used for CRUD tasks relating to an event
     "slug": "string",
     "name": "string",
     "website": "string",
-    "startDate": "datetime",
-    "endDate": "datetime",
+    "start_date": "datetime",
+    "end_date": "datetime",
     "organisation": "uuid",
     "parent": "uuid",
-    "landingPage": "uuid"
+    "landing_page": "uuid"
   }
 }
 ```
@@ -352,11 +352,11 @@ This section is used for CRUD tasks relating to an event
   "id": "uuid|required",
   "name": "string|optional|2-250",
   "website": "string|optional|5-250",
-  "startDate": "datetime|optional",
-  "endDate": "datetime|optional",
+  "start_date": "datetime|optional",
+  "end_date": "datetime|optional",
   "organisation": "uuid|optional",
   "parent": "uuid|optional",
-  "landingPage": "uuid|optional"
+  "landing_page": "uuid|optional"
 }
 ```
 *Receive*
@@ -433,10 +433,10 @@ This section is used for CRUD tasks relating to an event itinerary
 {
   "name": "string|required|2-250",
   "website": "string|optional|5-250",
-  "startDate": "datetime|optional",
-  "endDate": "datetime|optional",
+  "start_date": "datetime|optional",
+  "end_date": "datetime|optional",
   "event": "uuid|required",
-  "landingPage": "uuid|optional"
+  "landing_page": "uuid|optional"
 }
 ```
 *Receive*
@@ -478,8 +478,8 @@ This section is used for CRUD tasks relating to an event itinerary
   "id": "uuid|optional",
   "organisation": "uuid|optional",
   "event": "uuid|optional",
-  "startDate": "datetime|optional",
-  "endDate": "datetime|optional"
+  "start_date": "datetime|optional",
+  "end_date": "datetime|optional"
 }
 ```
 *Receive*
@@ -499,10 +499,10 @@ This section is used for CRUD tasks relating to an event itinerary
       "slug": "string",
       "name": "string",
       "website": "string",
-      "startDate": "datetime",
-      "endDate": "datetime",
+      "start_date": "datetime",
+      "end_date": "datetime",
       "event": "uuid",
-      "landingPage": "uuid"
+      "landing_page": "uuid"
     },
     ...
   ]
@@ -523,10 +523,10 @@ This section is used for CRUD tasks relating to an event itinerary
     "slug": "string",
     "name": "string",
     "website": "string",
-    "startDate": "datetime",
-    "endDate": "datetime",
+    "start_date": "datetime",
+    "end_date": "datetime",
     "event": "uuid",
-    "landingPage": "uuid"
+    "landing_page": "uuid"
   }
 }
 ```
@@ -550,10 +550,10 @@ This section is used for CRUD tasks relating to an event itinerary
   "id": "uuid|required",
   "name": "string|optional|2-250",
   "website": "string|optional|5-250",
-  "startDate": "datetime|optional",
-  "endDate": "datetime|optional",
+  "start_date": "datetime|optional",
+  "end_date": "datetime|optional",
   "event": "uuid|optional",
-  "landingPage": "uuid|optional"
+  "landing_page": "uuid|optional"
 }
 ```
 *Receive*
@@ -629,10 +629,10 @@ This section is used for CRUD tasks relating to an event itinerary items
 ```JSON
 {
   "title": "string|required|2-250",
-  "startDate": "datetime|optional",
-  "endDate": "datetime|optional",
+  "start_date": "datetime|optional",
+  "end_date": "datetime|optional",
   "itinerary": "uuid|required",
-  "landingPage": "uuid|optional",
+  "landing_page": "uuid|optional",
   "type": "enum|item_types|required",
   "configuration": item_type_config
 }
@@ -731,8 +731,8 @@ _item_type_config_
   "id": "uuid|optional",
   "organisation": "uuid|optional",
   "event": "uuid|optional",
-  "startDate": "datetime|optional",
-  "endDate": "datetime|optional"
+  "start_date": "datetime|optional",
+  "end_date": "datetime|optional"
 }
 ```
 *Receive*
@@ -752,10 +752,10 @@ _item_type_config_
       "slug": "string",
       "name": "string",
       "website": "string",
-      "startDate": "datetime",
-      "endDate": "datetime",
+      "start_date": "datetime",
+      "end_date": "datetime",
       "event": "uuid",
-      "landingPage": "uuid"
+      "landing_page": "uuid"
     },
     ...
   ]
@@ -776,10 +776,10 @@ _item_type_config_
     "slug": "string",
     "name": "string",
     "website": "string",
-    "startDate": "datetime",
-    "endDate": "datetime",
+    "start_date": "datetime",
+    "end_date": "datetime",
     "event": "uuid",
-    "landingPage": "uuid"
+    "landing_page": "uuid"
   }
 }
 ```
@@ -803,10 +803,10 @@ _item_type_config_
   "id": "uuid|required",
   "name": "string|optional|2-250",
   "website": "string|optional|5-250",
-  "startDate": "datetime|optional",
-  "endDate": "datetime|optional",
+  "start_date": "datetime|optional",
+  "end_date": "datetime|optional",
   "event": "uuid|optional",
-  "landingPage": "uuid|optional"
+  "landing_page": "uuid|optional"
 }
 ```
 *Receive*

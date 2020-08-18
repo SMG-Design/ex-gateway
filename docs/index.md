@@ -29,7 +29,7 @@ We support the following types of itinerary items
 
 ### Security
 
-The socket connection is authenticated using an oauth2 authorization code. This can be obtained from https://api.extream.io/oauth2/authorize
+The socket connection is authenticated using an oauth2 authorization code. This can be obtained from https://api.extream.app/auth/oauth2/authorize
 
 Set the `userToken` based on the users localStorage or the oauth2 authorization code if null. Get the users status and display a login form if required.
 
@@ -38,7 +38,7 @@ In the meta of a response to any command, you will have information whether the 
 An example authenticated process assuming using socket.io:
 ```javascript
 const userToken = localStorage.getItem('ex-authentication') || `YOUR_ACCESS_TOKEN`;
-const socket = io('https://gateway.extream.io', {
+const socket = io('https://gateway.extream.app', {
   transports: ['websocket']
 });
 // Socket connected

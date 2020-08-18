@@ -3,3 +3,6 @@ env: flex
 
 network:
   session_affinity: true
+
+env_variables:
+  EXAUTH: https://ex-auth-dot-stoked-reality-284921.ew.r.appspot.com

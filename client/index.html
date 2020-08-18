@@ -11,6 +11,19 @@
   </head>
   <body>
     <h1>EX-Gateway command list and tester</h1>
+    <h2>Set environment</h2>
+    <ul>
+      <li><a href="#" class="env" onclick="setEnv('local')">Local<input type="hidden" name="auth" value="http://localhost:8881" /><input type="hidden" name="gateway" value="http://localhost:8880" /></a></li>
+      <!-- <li><a href="#" class="env">GCP<input type="hidden" name="auth" value="https://api.extream.app/auth" /></a></li> -->
+      <li><a href="#" class="env" onclick="setEnv('gcp')">GCP<input type="hidden" name="auth" value="https://ex-auth-dot-stoked-reality-284921.ew.r.appspot.com/" /><input type="hidden" name="gateway" value="https://stoked-reality-284921.ew.r.appspot.com" /></a></li>
+    </ul>
+    <h2>Login</h2>
+    <form id="authForm">
+      <input type="text" name="username" placeholder="username" /><br />
+      <input type="password" name="password" placeholder="password" />
+      <input type="button" onclick="authUser(this)" value="Authorise" />
+    </form>
+    <pre id="authResponse"></pre>
     <ul>
       <li><a href="#" class="action" onclick="actionClick(this)">Register Attendee</a><input type="hidden" name="action" value="register" /><input type="hidden" name="payload" value='{
         "username": "string|optional",
@@ -29,14 +42,69 @@
         "grant_type": "password",
         "client_id": null
       }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Create organisation</a><input type="hidden" name="action" value="admin_organisation_create" /><input type="hidden" name="payload" value='{
+        "name": "string|required|2-250",
+        "website": "string|optional|5-250",
+        "primary_contact": {
+          "first_name": "string|optional|2-20",
+          "last_name": "string|optional|2-20",
+          "email": "string|optional|4-120"
+        },
+        "parent": "uuid|optional",
+        "landing_page": "uuid|optional"
+      }' /></li>
     </ul>
     <h3>Action: <span id="action" /></h3>
     <textarea id="payload" class="textarea"></textarea>
-    <div id="response"></div>
+    <pre id="response"></pre>
     <input type="button" id="submit" value="Send request" />
     <script src="node_modules/socket.io-client/dist/socket.io.js"></script>
     <script>
-      const socket = io('http://localhost:8880');
+      const envs = {
+        local: {
+          auth: "http://localhost:8881",
+          gateway: "http://localhost:8880"
+        },
+        gcp: {
+          auth: "https://api.extream.app/auth",
+          gateway: "https://gateway.extream.app"
+        }
+      }
+      let env = envs.local;
+      const setEnv = (setEnv) => {
+        env = envs[setEnv];
+      }
+      const authUser = async () => {
+        const form = document.querySelector('#authForm');
+        const username = form.querySelector("input[name='username']").value;
+        const password = form.querySelector("input[name='password']").value;
+        const params = {
+          username,
+          password,
+          grant_type: 'password',
+          client_id: 'null',
+          client_secret: 'null'
+        };
+        const auth = await fetch(`${env.auth}/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: Object.keys(params).map(key => key + '=' + params[key]).join('&')
+        });
+        try {
+          const resp = await auth.json();
+          if (resp.access_token) {
+            env.access_token = resp.access_token;
+            document.getElementById('authResponse').innerHTML = JSON.stringify(resp, null, 2);
+            const socket = io(env.gateway, {
+              query: env.access_token
+            });
+          }
+        } catch (error) {
+          document.getElementById('authResponse').innerHTML = error;
+        }
+      };      
       const actionClick = (el) => {
         const action = el.nextSibling.value;
         const payload = el.nextSibling.nextSibling.value;

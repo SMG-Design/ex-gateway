@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Websocket based Gateway for all activities. This includes Admin CRUD, Client Management Portal and Consumer Applications.",
   "main": "server.js",
+  "engines": {
+    "node": "12.x"
+  },
   "directories": {
     "doc": "docs"
   },
