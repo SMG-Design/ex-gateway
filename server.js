@@ -1,13 +1,17 @@
-require('dotenv').config();
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 // Imports the Google Cloud client library
 const {PubSub} = require('@google-cloud/pubsub');
 const grpc = require('grpc');
 const projectId = 'stoked-reality-284921';
 const app = require('express')();
+const bodyParser = require('body-parser');
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const axios = require('axios');
 const exauthURL = process.env.EXAUTH;
+const jsonBodyParser = bodyParser.json();
 
 const rooms = {};
 
@@ -68,7 +72,7 @@ const actions = {
       }
     }
   }
-}
+};
 
 function push(
   topicName = 'ex-manage',
@@ -86,6 +90,14 @@ function push(
 
   return publishMessage();
 }
+app.post('/push', jsonBodyParser, async (req, res) => {
+  const socket = rooms[req.body.socketId].socket;
+  socket.emit(`${domain}_${action}_${command}`, req.body);
+  res.status(200).send('OK');
+});
+const subscriptionName = 'ex-gateway-subscription';
+const maxInProgress = 5;
+const timeout = 10;
 
 io.on('connection', (socket) => {
 
@@ -106,8 +118,8 @@ io.on('connection', (socket) => {
         }
         const exauthUser = resp.data;
         socket.emit('authorized', exauthUser);
-        rooms[token] = { ...exauthUser, socket };
-        socket.join(token);
+        rooms[socket.id] = { ...exauthUser, token, socket };
+        socket.join(socket.id);
       } catch (error) {
         console.log(error);
         socket.emit('unauthorized', { error: error.message });
@@ -126,7 +138,8 @@ io.on('connection', (socket) => {
         socket.on(`${domain}_${action}_${command}`, async (payload) => {
           const { topic, validation, acl } = commandProps;
           try {
-            const messageId = await push(topic, { action, command, payload });
+            const user = rooms[socket.id];
+            const messageId = await push(topic, { domain, action, command, payload, user, socketId: socket.id });
             socket.emit(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
           } catch (error) {
             socket.emit(`${domain}_${action}_${command}`, { status: 400, error });

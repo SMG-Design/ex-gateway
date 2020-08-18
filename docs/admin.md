@@ -19,6 +19,7 @@ This section is used for CRUD tasks relating to an organisation
 *Send*
 `admin_organisation_create` - Create a new organisation.
 *Payload*
+
 ```JSON
 {
   "name": "string|required|2-250",
@@ -33,9 +34,13 @@ This section is used for CRUD tasks relating to an organisation
   "landing_page": "uuid|optional"
 }
 ```
-*Receive*
+
+#### Receive
+
 `admin_organisation_create`
-*Successful Payload*
+
+#### Successful Payload
+
 ```JSON
 {
   "status": 201,
@@ -50,7 +55,8 @@ This section is used for CRUD tasks relating to an organisation
 }
 ```
 
-*Unsuccessful Payload*
+#### Unsuccessful Payload
+
 ```JSON
 {
   "status": 400,
@@ -64,18 +70,25 @@ This section is used for CRUD tasks relating to an organisation
 }
 ```
 
-*Send*
+#### Send
+
 `admin_organisation_read` - Retrieve 1 or many organisations.
-*Payload*
+
+#### Payload
+
 ```JSON
 {
   "id": "uuid|optional",
   "parent": "uuid|optional"
 }
 ```
-*Receive*
+
+#### Receive
+
 `admin_organisation_read`
-*Successful Payload - Many*
+
+#### Successful Payload - Many
+
 ```JSON
 {
   "status": 200,
@@ -104,7 +117,8 @@ This section is used for CRUD tasks relating to an organisation
 }
 ```
 
-*Successful Payload - Single*
+#### Successful Payload - Single
+
 ```JSON
 {
   "status": 200,
@@ -130,7 +144,8 @@ This section is used for CRUD tasks relating to an organisation
 }
 ```
 
-*Unsuccessful Payload*
+#### Unsuccessful Payload
+
 ```JSON
 {
   "status": 404,
@@ -141,9 +156,12 @@ This section is used for CRUD tasks relating to an organisation
 }
 ```
 
-*Send*
+#### Send
+
 `admin_organisation_update` - Update an existing organisation.
-*Payload*
+
+#### Payload
+
 ```JSON
 {
   "id": "uuid|required",
@@ -159,9 +177,13 @@ This section is used for CRUD tasks relating to an organisation
   "landing_page": "uuid|optional"
 }
 ```
-*Receive*
+
+#### Receive
+
 `admin_organisation_update`
-*Successful Payload*
+
+#### Successful Payload
+
 ```JSON
 {
   "status": 200,
@@ -176,7 +198,8 @@ This section is used for CRUD tasks relating to an organisation
 }
 ```
 
-*Unsuccessful Payload*
+#### Unsuccessful Payload
+
 ```JSON
 {
   "status": 400,
@@ -190,17 +213,24 @@ This section is used for CRUD tasks relating to an organisation
 }
 ```
 
-*Send*
+#### Send
+
 `admin_organisation_delete` - Delete an organisation.
-*Payload*
+
+#### Payload
+
 ```JSON
 {
   "id": "uuid|required"
 }
 ```
-*Receive*
+
+#### Receive
+
 `admin_organisation_delete`
-*Successful Payload*
+
+#### Successful Payload
+
 ```JSON
 {
   "status": 200,
@@ -211,7 +241,8 @@ This section is used for CRUD tasks relating to an organisation
 }
 ```
 
-*Unsuccessful Payload*
+#### Unsuccessful Payload
+
 ```JSON
 {
   "status": 404,
@@ -226,9 +257,12 @@ This section is used for CRUD tasks relating to an organisation
 
 This section is used for CRUD tasks relating to an event
 
-*Send*
+#### Send
+
 `admin_event_create` - Create a new event.
-*Payload*
+
+#### Payload
+
 ```JSON
 {
   "name": "string|required|2-250",
@@ -240,9 +274,13 @@ This section is used for CRUD tasks relating to an event
   "landing_page": "uuid|optional"
 }
 ```
-*Receive*
+
+#### Receive
+
 `admin_event_create`
-*Successful Payload*
+
+#### Successful Payload
+
 ```JSON
 {
   "status": 201,
@@ -257,7 +295,8 @@ This section is used for CRUD tasks relating to an event
 }
 ```
 
-*Unsuccessful Payload*
+#### Unsuccessful Payload
+
 ```JSON
 {
   "status": 400,
@@ -271,9 +310,12 @@ This section is used for CRUD tasks relating to an event
 }
 ```
 
-*Send*
+#### Send
+
 `admin_event_read` - Retrieve 1 or many events.
-*Payload*
+
+#### Payload
+
 ```JSON
 {
   "id": "uuid|optional",
@@ -282,9 +324,13 @@ This section is used for CRUD tasks relating to an event
   "end_date": "datetime|optional"
 }
 ```
-*Receive*
+
+#### Receive
+
 `admin_event_read`
-*Successful Payload - Many*
+
+#### Successful Payload - Many
+
 ```JSON
 {
   "status": 200,
@@ -310,7 +356,8 @@ This section is used for CRUD tasks relating to an event
 }
 ```
 
-*Successful Payload - Single*
+#### Successful Payload - Single
+
 ```JSON
 {
   "status": 200,
@@ -333,7 +380,8 @@ This section is used for CRUD tasks relating to an event
 }
 ```
 
-*Unsuccessful Payload*
+#### Unsuccessful Payload
+
 ```JSON
 {
   "status": 404,
@@ -344,9 +392,12 @@ This section is used for CRUD tasks relating to an event
 }
 ```
 
-*Send*
+#### Send
+
 `admin_event_update` - Update an existing event.
-*Payload*
+
+#### Payload
+
 ```JSON
 {
   "id": "uuid|required",
@@ -359,9 +410,13 @@ This section is used for CRUD tasks relating to an event
   "landing_page": "uuid|optional"
 }
 ```
-*Receive*
+
+#### Receive
+
 `admin_event_update`
-*Successful Payload*
+
+#### Successful Payload
+
 ```JSON
 {
   "status": 200,
@@ -376,7 +431,8 @@ This section is used for CRUD tasks relating to an event
 }
 ```
 
-*Unsuccessful Payload*
+#### Unsuccessful Payload
+
 ```JSON
 {
   "status": 400,
@@ -390,17 +446,24 @@ This section is used for CRUD tasks relating to an event
 }
 ```
 
-*Send*
+#### Send
+
 `admin_event_delete` - Delete an event.
-*Payload*
+
+#### Payload
+
 ```JSON
 {
   "id": "uuid|required"
 }
 ```
-*Receive*
+
+#### Receive
+
 `admin_event_delete`
-*Successful Payload*
+
+#### Successful Payload
+
 ```JSON
 {
   "status": 200,
@@ -411,7 +474,8 @@ This section is used for CRUD tasks relating to an event
 }
 ```
 
-*Unsuccessful Payload*
+#### Unsuccessful Payload
+
 ```JSON
 {
   "status": 404,
@@ -426,9 +490,12 @@ This section is used for CRUD tasks relating to an event
 
 This section is used for CRUD tasks relating to an event itinerary
 
-*Send*
+#### Send
+
 `admin_itinerary_create` - Create a new itinerary.
-*Payload*
+
+#### Payload
+
 ```JSON
 {
   "name": "string|required|2-250",
@@ -439,9 +506,13 @@ This section is used for CRUD tasks relating to an event itinerary
   "landing_page": "uuid|optional"
 }
 ```
-*Receive*
+
+#### Receive
+
 `admin_itinerary_create`
-*Successful Payload*
+
+#### Successful Payload
+
 ```JSON
 {
   "status": 201,
@@ -456,7 +527,8 @@ This section is used for CRUD tasks relating to an event itinerary
 }
 ```
 
-*Unsuccessful Payload*
+#### Unsuccessful Payload
+
 ```JSON
 {
   "status": 400,
@@ -470,9 +542,12 @@ This section is used for CRUD tasks relating to an event itinerary
 }
 ```
 
-*Send*
+#### Send
+
 `admin_itinerary_read` - Retrieve 1 or many itineraries.
-*Payload*
+
+#### Payload
+
 ```JSON
 {
   "id": "uuid|optional",
@@ -482,9 +557,13 @@ This section is used for CRUD tasks relating to an event itinerary
   "end_date": "datetime|optional"
 }
 ```
-*Receive*
+
+#### Receive
+
 `admin_itinerary_read`
-*Successful Payload - Many*
+
+#### Successful Payload - Many
+
 ```JSON
 {
   "status": 200,
@@ -509,7 +588,8 @@ This section is used for CRUD tasks relating to an event itinerary
 }
 ```
 
-*Successful Payload - Single*
+#### Successful Payload - Single
+
 ```JSON
 {
   "status": 200,
@@ -531,7 +611,8 @@ This section is used for CRUD tasks relating to an event itinerary
 }
 ```
 
-*Unsuccessful Payload*
+#### Unsuccessful Payload
+
 ```JSON
 {
   "status": 404,
@@ -542,9 +623,12 @@ This section is used for CRUD tasks relating to an event itinerary
 }
 ```
 
-*Send*
+#### Send
+
 `admin_itinerary_update` - Update an existing itinerary.
-*Payload*
+
+#### Payload
+
 ```JSON
 {
   "id": "uuid|required",
@@ -556,9 +640,13 @@ This section is used for CRUD tasks relating to an event itinerary
   "landing_page": "uuid|optional"
 }
 ```
-*Receive*
+
+#### Receive
+
 `admin_itinerary_update`
-*Successful Payload*
+
+#### Successful Payload
+
 ```JSON
 {
   "status": 200,
@@ -573,7 +661,8 @@ This section is used for CRUD tasks relating to an event itinerary
 }
 ```
 
-*Unsuccessful Payload*
+#### Unsuccessful Payload
+
 ```JSON
 {
   "status": 400,
@@ -587,17 +676,24 @@ This section is used for CRUD tasks relating to an event itinerary
 }
 ```
 
-*Send*
+#### Send
+
 `admin_itinerary_delete` - Delete an itinerary.
-*Payload*
+
+#### Payload
+
 ```JSON
 {
   "id": "uuid|required"
 }
 ```
-*Receive*
+
+#### Receive
+
 `admin_itinerary_delete`
-*Successful Payload*
+
+#### Successful Payload
+
 ```JSON
 {
   "status": 200,
@@ -608,7 +704,8 @@ This section is used for CRUD tasks relating to an event itinerary
 }
 ```
 
-*Unsuccessful Payload*
+#### Unsuccessful Payload
+
 ```JSON
 {
   "status": 404,
@@ -623,9 +720,12 @@ This section is used for CRUD tasks relating to an event itinerary
 
 This section is used for CRUD tasks relating to an event itinerary items
 
-*Send*
+#### Send
+
 `admin_item_create` - Create a new itinerary item.
-*Payload*
+
+#### Payload
+
 ```JSON
 {
   "title": "string|required|2-250",
@@ -638,7 +738,8 @@ This section is used for CRUD tasks relating to an event itinerary items
 }
 ```
 
-_item_types_
+##### item_types
+
 * rtmp
 * zoom
 * webrtc
@@ -647,38 +748,50 @@ _item_types_
 * chat
 * html
 
-_item_type_config_
+##### item_type_config
+
 * rtmp
+
 ```JSON
 {
   "source_url": "url|optional"
 }
 ```
+
 * zoom
+
 ```JSON
 {
   "meeting_id": "string|required"
 }
 ```
+
 * webrtc
+
 ```JSON
 {
   "moderators": ["uuid|required"]
 }
 ```
+
 * video
+
 ```JSON
 {
   "url": "string|required"
 }
 ```
+
 * forum
+
 ```JSON
 {
   "moderators": ["uuid|required"]
 }
 ```
+
 * chat
+
 ```JSON
 {
   "moderators": ["uuid|required"],
@@ -686,15 +799,21 @@ _item_type_config_
   "max_members": integer
 }
 ```
+
 * html
+
 ```JSON
 {
   "source_code": "string|required"
 }
 ```
-*Receive*
+
+#### Receive
+
 `admin_itinerary_create`
-*Successful Payload*
+
+#### Successful Payload
+
 ```JSON
 {
   "status": 201,
@@ -709,7 +828,8 @@ _item_type_config_
 }
 ```
 
-*Unsuccessful Payload*
+#### Unsuccessful Payload
+
 ```JSON
 {
   "status": 400,
@@ -723,9 +843,12 @@ _item_type_config_
 }
 ```
 
-*Send*
+#### Send
+
 `admin_itinerary_read` - Retrieve 1 or many itineraries.
-*Payload*
+
+#### Payload
+
 ```JSON
 {
   "id": "uuid|optional",
@@ -735,9 +858,13 @@ _item_type_config_
   "end_date": "datetime|optional"
 }
 ```
-*Receive*
+
+#### Receive
+
 `admin_itinerary_read`
-*Successful Payload - Many*
+
+#### Successful Payload - Many
+
 ```JSON
 {
   "status": 200,
@@ -762,7 +889,8 @@ _item_type_config_
 }
 ```
 
-*Successful Payload - Single*
+#### Successful Payload - Single
+
 ```JSON
 {
   "status": 200,
@@ -784,7 +912,8 @@ _item_type_config_
 }
 ```
 
-*Unsuccessful Payload*
+#### Unsuccessful Payload
+
 ```JSON
 {
   "status": 404,
@@ -795,9 +924,12 @@ _item_type_config_
 }
 ```
 
-*Send*
+#### Send
+
 `admin_itinerary_update` - Update an existing itinerary.
-*Payload*
+
+#### Payload
+
 ```JSON
 {
   "id": "uuid|required",
@@ -809,9 +941,13 @@ _item_type_config_
   "landing_page": "uuid|optional"
 }
 ```
-*Receive*
+
+#### Receive
+
 `admin_itinerary_update`
-*Successful Payload*
+
+#### Successful Payload
+
 ```JSON
 {
   "status": 200,
@@ -826,7 +962,8 @@ _item_type_config_
 }
 ```
 
-*Unsuccessful Payload*
+#### Unsuccessful Payload
+
 ```JSON
 {
   "status": 400,
@@ -840,17 +977,23 @@ _item_type_config_
 }
 ```
 
-*Send*
+#### Send
+
 `admin_itinerary_delete` - Delete an itinerary.
-*Payload*
+#### Payload
+
 ```JSON
 {
   "id": "uuid|required"
 }
 ```
-*Receive*
+
+#### Receive
+
 `admin_itinerary_delete`
-*Successful Payload*
+
+#### Successful Payload
+
 ```JSON
 {
   "status": 200,
@@ -861,7 +1004,8 @@ _item_type_config_
 }
 ```
 
-*Unsuccessful Payload*
+#### Unsuccessful Payload
+
 ```JSON
 {
   "status": 404,
