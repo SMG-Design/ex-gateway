@@ -13,9 +13,9 @@
     <h1>EX-Gateway command list and tester</h1>
     <h2>Set environment</h2>
     <ul>
-      <li><a href="#" class="env" onclick="setEnv('local')">Local<input type="hidden" name="auth" value="http://localhost:8881" /><input type="hidden" name="gateway" value="http://localhost:8880" /></a></li>
-      <!-- <li><a href="#" class="env">GCP<input type="hidden" name="auth" value="https://api.extream.app/auth" /></a></li> -->
-      <li><a href="#" class="env" onclick="setEnv('gcp')">GCP<input type="hidden" name="auth" value="https://ex-auth-dot-stoked-reality-284921.ew.r.appspot.com/" /><input type="hidden" name="gateway" value="https://stoked-reality-284921.ew.r.appspot.com" /></a></li>
+      <li><a href="#" class="env" onclick="setEnv('local')">Local</a></li>
+      <li><a href="#" class="env" onclick="setEnv('gcp')">GCP</a></li>
+      <li><a href="#" class="env" onclick="setEnv('alpha_gcp')">Alpha GCP</a></li>
     </ul>
     <h2>Login</h2>
     <form id="authForm">
@@ -56,6 +56,10 @@
         gcp: {
           auth: "https://api.extream.app/auth",
           gateway: "https://gateway.extream.app"
+        },
+        alpha_gcp: {
+          auth: "https://ex-auth-dot-stoked-reality-284921.ew.r.appspot.com",
+          gateway: "https://stoked-reality-284921.ew.r.appspot.com"
         }
       }
       let env = envs.local;
