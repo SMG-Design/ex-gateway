@@ -140,6 +140,7 @@ io.on('connection', (socket) => {
           const { topic, validation, acl } = commandProps;
           try {
             const user = Object.assign({}, rooms[socket.id], { socket: undefined });
+            delete user[socket];
             console.log('payload', { domain, action, command, payload, user, socketId: socket.id });
             const messageId = await push(topic, { domain, action, command, payload, user, socketId: socket.id });
             console.log(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
