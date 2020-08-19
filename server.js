@@ -91,10 +91,16 @@ function push(
   return publishMessage();
 }
 app.post('/push', jsonBodyParser, async (req, res) => {
-  console.log('pushing', req.body);
-  const socket = rooms[req.body.socketId].socket;
-  socket.emit(`${domain}_${action}_${command}`, req.body);
-  res.status(200).send('OK');
+  const body = req.body.message.data ? JSON.parse(Buffer.from(req.body.message.data, 'base64').toString()) : null;
+  if (rooms[body.socketId]) {
+    console.log('pushing to socket', body.socketId, Object.keys(rooms));
+    const socket = rooms[body.socketId].socket;
+    socket.emit(`${body.domain}_${body.action}_${body.command}`, body);
+    res.status(200).send('OK');
+  } else {
+    // socket not found
+    res.status(200).send('OK');
+  }
 });
 const subscriptionName = 'ex-gateway-subscription';
 const maxInProgress = 5;
@@ -141,7 +147,6 @@ io.on('connection', (socket) => {
           try {
             const user = Object.assign({}, rooms[socket.id], { socket: undefined });
             delete user[socket];
-            console.log('payload', { domain, action, command, payload, user, socketId: socket.id });
             const messageId = await push(topic, { domain, action, command, payload, user, socketId: socket.id });
             console.log(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
             socket.emit(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
