@@ -19,6 +19,7 @@ This gateway is intended to be consumed by our JavaScript Browser SDK, Wordpress
 ## Itinerary Item Types
 
 We support the following types of itinerary items
+
 1. RTMP Live stream (streamed into our RTMP servers and URL delivered via the Gateway to the RTMP server)
 1. Zoom video call (with participant criteria)
 1. WebRTC video call (with participant criteria)
@@ -38,6 +39,7 @@ Set the `userToken` based on the users localStorage or the oauth2 authorization 
 In the meta of a response to any command, you will have information whether the command requires login. If no login is required, the oauth2 authorization code will be enough.
 
 An example authenticated process assuming using socket.io:
+
 ```javascript
 const userToken = localStorage.getItem('ex-authentication') || `YOUR_ACCESS_TOKEN`;
 const socket = io('https://gateway.extream.io', {

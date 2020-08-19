@@ -20,7 +20,7 @@ const actions = {
     organisation: {
       create: {
         topic: 'ex-manage',
-        acl: ['organisation:create'],
+        acl: ['edit_organisation'],
         validation: {
           name: ['string', 'required', 2, 250],
           website: ['string', 'optional', 4, 250],
@@ -31,7 +31,7 @@ const actions = {
       },
       update: {
         topic: 'ex-manage',
-        acl: ['organisation:edit'],
+        acl: ['edit_organisation'],
         validation: {
           id: ['uuid', 'required'],
           name: ['string', 'optional', 2, 250],
@@ -45,7 +45,7 @@ const actions = {
     event: {
       create: {
         topic: 'ex-manage',
-        acl: ['event:create'],
+        acl: ['edit_event'],
         validation: {
           name: ['string', 'required', 2, 250],
           website: ['string', 'optional', 4, 250],
@@ -58,7 +58,7 @@ const actions = {
       },
       update: {
         topic: 'ex-manage',
-        acl: ['event:edit'],
+        acl: ['edit_event'],
         validation: {
           id: ['uuid', 'required'],
           name: ['string', 'optional', 2, 250],
@@ -91,6 +91,7 @@ function push(
   return publishMessage();
 }
 app.post('/push', jsonBodyParser, async (req, res) => {
+  console.log('pushing', req.body);
   const socket = rooms[req.body.socketId].socket;
   socket.emit(`${domain}_${action}_${command}`, req.body);
   res.status(200).send('OK');
@@ -138,11 +139,14 @@ io.on('connection', (socket) => {
         socket.on(`${domain}_${action}_${command}`, async (payload) => {
           const { topic, validation, acl } = commandProps;
           try {
-            const user = rooms[socket.id];
+            const user = Object.assign({}, rooms[socket.id], { socket: undefined });
+            console.log('payload', { domain, action, command, payload, user, socketId: socket.id });
             const messageId = await push(topic, { domain, action, command, payload, user, socketId: socket.id });
+            console.log(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
             socket.emit(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
           } catch (error) {
-            socket.emit(`${domain}_${action}_${command}`, { status: 400, error });
+            console.error(error);
+            socket.emit(`${domain}_${action}_${command}`, { status: 400, error: error.message });
           }
         });
       });

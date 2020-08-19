@@ -30,15 +30,11 @@
         "token": "userToken"
       }' /></li>
       <li><a href="#" class="action" onclick="actionClick(this)">Create organisation</a><input type="hidden" name="action" value="admin_organisation_create" /><input type="hidden" name="payload" value='{
-        "name": "string|required|2-250",
-        "website": "string|optional|5-250",
+        "name": "organisation-name",
+        "website": "www.example.com",
         "primary_contact": {
-          "first_name": "string|optional|2-20",
-          "last_name": "string|optional|2-20",
-          "email": "string|optional|4-120"
-        },
-        "parent": "uuid|optional",
-        "landing_page": "uuid|optional"
+          "id": "5145440f-8cd3-4e68-a20e-181158c56342"
+        }
       }' /></li>
     </ul>
     <h3>Action: <span id="action" /></h3>
