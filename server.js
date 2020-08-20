@@ -10,8 +10,12 @@ const bodyParser = require('body-parser');
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const axios = require('axios');
+const { time } = require('console');
 const exauthURL = process.env.EXAUTH;
 const jsonBodyParser = bodyParser.json();
+
+// Instantiates a client
+const pubsub = new PubSub({grpc, projectId});
 
 const rooms = {};
 
@@ -78,8 +82,6 @@ function push(
   topicName = 'ex-manage',
   data = {}
 ) {
-  // Instantiates a client
-  const pubsub = new PubSub({grpc, projectId});
 
   async function publishMessage() {
     const dataBuffer = Buffer.from(JSON.stringify(data));
@@ -90,21 +92,36 @@ function push(
 
   return publishMessage();
 }
-app.post('/push', jsonBodyParser, async (req, res) => {
-  const body = req.body.message.data ? JSON.parse(Buffer.from(req.body.message.data, 'base64').toString()) : null;
-  if (rooms[body.socketId]) {
-    console.log('pushing to socket', body.socketId, Object.keys(rooms));
-    const socket = rooms[body.socketId].socket;
-    socket.emit(`${body.domain}_${body.action}_${body.command}`, body);
-    res.status(200).send('OK');
-  } else {
-    // socket not found
-    res.status(200).send('OK');
-  }
-});
-const subscriptionName = 'ex-gateway-subscription';
-const maxInProgress = 5;
-const timeout = 10;
+function pull(
+  subscriptionName = 'ex-gateway-subscription',
+  timeout = 60
+) {
+  const subscription = pubsub.subscription(subscriptionName);
+  let messageCount = 0;
+  const messageHandler = message => {
+    console.log(`Received message ${message.id}:`);
+    messageCount += 1;
+    const body = message.data ? JSON.parse(Buffer.from(message.data, 'base64').toString()) : null;
+    if (rooms[body.socketId]) {
+      console.log('pushing to socket', body.socketId, Object.keys(rooms));
+      const socket = rooms[body.socketId].socket;
+      socket.emit(`${body.domain}_${body.action}_${body.command}`, body);
+    } else {
+      // socket not found
+    }
+    // "Ack" (acknowledge receipt of) the message
+    message.ack();
+  };
+  subscription.on('message', messageHandler);
+  // regurgitate the handler occasionally \\
+  setTimeout(() => {
+    subscription.removeListener('message', messageHandler);
+    console.log(`${messageCount} message(s) received. Refreshing.`);
+    pull(subscriptionName, timeout);
+  }, timeout * 1000);
+}
+
+pull();
 
 io.on('connection', (socket) => {
 
