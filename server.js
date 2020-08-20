@@ -5,14 +5,11 @@ if (process.env.NODE_ENV !== 'production') {
 const {PubSub} = require('@google-cloud/pubsub');
 const grpc = require('grpc');
 const projectId = 'stoked-reality-284921';
-const app = require('express')();
-const bodyParser = require('body-parser');
-const server = require('http').Server(app);
-const io = require('socket.io')(server);
+const io = require('socket.io')(process.env.PORT || 8880, {
+  serveClient: false
+});
 const axios = require('axios');
-const { time } = require('console');
 const exauthURL = process.env.EXAUTH;
-const jsonBodyParser = bodyParser.json();
 
 // Instantiates a client
 const pubsub = new PubSub({grpc, projectId});
@@ -102,12 +99,13 @@ function pull(
     console.log(`Received message ${message.id}:`);
     messageCount += 1;
     const body = message.data ? JSON.parse(Buffer.from(message.data, 'base64').toString()) : null;
-    if (rooms[body.socketId]) {
+    if (rooms[body.user.token]) {
       console.log('pushing to socket', body.socketId, Object.keys(rooms));
-      const socket = rooms[body.socketId].socket;
+      const socket = rooms[body.user.token].socket;
       socket.emit(`${body.domain}_${body.action}_${body.command}`, body);
     } else {
       // socket not found
+      console.log('socket not found', body);
     }
     // "Ack" (acknowledge receipt of) the message
     message.ack();
@@ -123,8 +121,14 @@ function pull(
 
 pull();
 
-io.on('connection', (socket) => {
+// middleware
+io.use((socket, next) => {
+  let token = socket.handshake.query['x-auth'];
+  rooms[token] = { token, socket };
+  next();
+});
 
+io.on('connection', (socket) => {
   // AUTHORIZE
   socket.on('authorize', async ({ method, token }) => {
     const config = {
@@ -142,7 +146,7 @@ io.on('connection', (socket) => {
         }
         const exauthUser = resp.data;
         socket.emit('authorized', exauthUser);
-        rooms[socket.id] = { ...exauthUser, token, socket };
+        rooms[token] = { ...exauthUser, token, socket };
         socket.join(socket.id);
       } catch (error) {
         console.log(error);
@@ -162,7 +166,7 @@ io.on('connection', (socket) => {
         socket.on(`${domain}_${action}_${command}`, async (payload) => {
           const { topic, validation, acl } = commandProps;
           try {
-            const user = Object.assign({}, rooms[socket.id], { socket: undefined });
+            const user = Object.assign({}, rooms[socket.request._query['x-auth']], { socket: undefined });
             delete user[socket];
             const messageId = await push(topic, { domain, action, command, payload, user, socketId: socket.id });
             console.log(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
@@ -176,13 +180,4 @@ io.on('connection', (socket) => {
     });
   });
 });
-
-if (module === require.main) {
-  const PORT = process.env.PORT || 8080;
-  server.listen(PORT, () => {
-    console.log(`App listening on port ${PORT}`);
-    console.log('Press Ctrl+C to quit.');
-  });
-}
-
-module.exports = server;
+module.exports = io;

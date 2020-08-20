@@ -73,7 +73,6 @@
           client_id: 'null',
           client_secret: 'null'
         };
-        socket = io.connect(env.gateway);
         const auth = await fetch(`${env.auth}/auth/login`, {
           method: 'POST',
           headers: {
@@ -85,6 +84,7 @@
           const resp = await auth.json();
           if (resp.access_token) {
             env.access_token = resp.access_token;
+            socket = io(`${env.gateway}?x-auth=${env.access_token}`);
             document.getElementById('authResponse').innerHTML = JSON.stringify(resp, null, 2);
             socket.emit(`authorize`, { method: 'oauth2', token: env.access_token });
             socket.on(`authorized`, displayResp);
