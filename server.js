@@ -16,6 +16,32 @@ const pubsub = new PubSub({grpc, projectId});
 
 const rooms = {};
 
+const itemTypes = ['rtmp', 'zoom', 'webrtc', 'video', 'forum', 'chat', 'html'];
+
+const itemTypeConfig = {
+  rtmp: {
+    topic: 'ex-collab'
+  },
+  chat: {
+    topic: 'ex-discussion',
+    options: {
+      moderation: ['enum', 'required', ['trust', 'post-moderate', 'pre-approve']],
+      moderators: ['array', 'optional'],
+      threads: ['boolean', 'optional'],
+      private: ['boolean', 'optional']
+    }
+  },
+  forum: {
+    topic: 'ex-discussion',
+    options: {
+      moderation: ['enum', 'required', ['trust', 'post-moderate', 'pre-approve']],
+      moderators: ['array', 'optional'],
+      threads: ['boolean', 'optional'],
+      private: ['boolean', 'optional']
+    }
+  }
+};
+
 const actions = {
   admin: {
     organisation: {
@@ -41,6 +67,12 @@ const actions = {
           parent: ['uuid', 'optional'],
           landing_page: ['uuid', 'optional']
         }
+      },
+      read: {
+        topic: 'ex-manage'
+      },
+      delete: {
+        topic: 'ex-manage'
       }
     },
     event: {
@@ -70,6 +102,96 @@ const actions = {
           parent: ['uuid', 'optional'],
           landing_page: ['uuid', 'optional']
         }
+      },
+      read: {
+        topic: 'ex-manage'
+      },
+      delete: {
+        topic: 'ex-manage'
+      }
+    },
+    itinerary: {
+      create: {
+        topic: 'ex-manage',
+        acl: ['edit_itinerary'],
+        validation: {
+          id: ['uuid', 'required'],
+          name: ['string', 'optional', 2, 250],
+          website: ['string', 'optional', 4, 250],
+          start_date: ['datetime', 'optional'],
+          end_date: ['datetime', 'optional'],
+          event: ['uuid', 'optional'],
+          landing_page: ['uuid', 'optional']
+        }
+      },
+      update: {
+        topic: 'ex-manage',
+        acl: ['edit_itinerary'],
+        validation: {
+          id: ['uuid', 'required'],
+          name: ['string', 'optional', 2, 250],
+          website: ['string', 'optional', 4, 250],
+          start_date: ['datetime', 'optional'],
+          end_date: ['datetime', 'optional'],
+          event: ['uuid', 'optional'],
+          landing_page: ['uuid', 'optional']
+        }
+      },
+      read: {
+        topic: 'ex-manage',
+        acl: ['view_itinerary']
+      },
+      delete: {
+        topic: 'ex-manage',
+        acl: ['delete_itinerary']
+      }
+    },
+    item: {
+      create: {
+        acl: ['edit_item'],
+        validation: {
+          title: ['string', 'optional', 2, 250],
+          start_date: ['datetime', 'optional'],
+          end_date: ['datetime', 'optional'],
+          itinerary: ['uuid', 'required'],
+          landing_page: ['uuid', 'optional'],
+          type: ['enum', 'required', itemTypes],
+          configuration: ['object', 'optional']
+        }
+      },
+      update: {
+        acl: ['edit_event'],
+        validation: {
+          id: ['uuid', 'required'],
+          title: ['string', 'optional', 2, 250],
+          start_date: ['datetime', 'optional'],
+          end_date: ['datetime', 'optional'],
+          itinerary: ['uuid', 'required'],
+          landing_page: ['uuid', 'optional'],
+          type: ['enum', 'required', itemTypes],
+          configuration: ['object', 'optional']
+        }
+      },
+      read: {},
+      delete: {}
+    }
+  },
+  attendee: {
+    event: {
+
+    },
+    itinerary: {
+
+    },
+    item: {
+
+    },
+    chat: {
+      receive: {
+
+      },
+      send: {
+
       }
     }
   }
@@ -164,7 +286,12 @@ io.on('connection', (socket) => {
         // command = create
         const commandProps = actions[domain][action][command];
         socket.on(`${domain}_${action}_${command}`, async (payload) => {
-          const { topic, validation, acl } = commandProps;
+          let topic = commandProps.topic;
+          const validation = commandProps.validation;
+          const acl = commandProps.acl;
+          if (action === 'item') {
+            topic = itemTypeConfig[payload.type];
+          }
           try {
             const user = Object.assign({}, rooms[socket.request._query['x-auth']], { socket: undefined });
             delete user[socket];

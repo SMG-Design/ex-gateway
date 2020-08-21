@@ -33,8 +33,78 @@
         "name": "organisation-name",
         "website": "www.example.com",
         "primary_contact": {
-          "id": "5145440f-8cd3-4e68-a20e-181158c56342"
+          "id": "091e8b52-8506-4512-b75e-149ee51c4f04"
         }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Update organisation</a><input type="hidden" name="action" value="admin_organisation_update" /><input type="hidden" name="payload" value='{
+        "id": "c3a7a5bf-276a-415e-bf99-53108c277561",
+        "name": "organisation-name",
+        "website": "www.example.com",
+        "primary_contact": {
+          "id": "091e8b52-8506-4512-b75e-149ee51c4f04"
+        }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Read organisation</a><input type="hidden" name="action" value="admin_organisation_read" /><input type="hidden" name="payload" value='{
+        "id": "c3a7a5bf-276a-415e-bf99-53108c277561"
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Create event</a><input type="hidden" name="action" value="admin_event_create" /><input type="hidden" name="payload" value='{
+        "name": "event-name",
+        "website": "www.example.com",
+        "start_date": "2020-08-21 08:00:00",
+        "end_date": "2020-08-22 17:00:00",
+        "organisation": "c3a7a5bf-276a-415e-bf99-53108c277561"
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Create nested event</a><input type="hidden" name="action" value="admin_event_create" /><input type="hidden" name="payload" value='{
+        "name": "event-name",
+        "website": "www.example.com",
+        "start_date": "2020-08-21 08:00:00",
+        "end_date": "2020-08-22 17:00:00",
+        "event": "",
+        "organisation": "c3a7a5bf-276a-415e-bf99-53108c277561"
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Update event</a><input type="hidden" name="action" value="admin_event_update" /><input type="hidden" name="payload" value='{
+        "id": "",
+        "start_date": "2020-08-21 08:30:00",
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Read event</a><input type="hidden" name="action" value="admin_event_read" /><input type="hidden" name="payload" value='{
+        "id": ""
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Create itinerary</a><input type="hidden" name="action" value="admin_itinerary_create" /><input type="hidden" name="payload" value='{
+        "name": "event-name",
+        "website": "www.example.com",
+        "organisation": "c3a7a5bf-276a-415e-bf99-53108c277561"
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Update itinerary</a><input type="hidden" name="action" value="admin_itinerary_update" /><input type="hidden" name="payload" value='{
+        "name": "event-name",
+        "website": "www.example.com",
+        "organisation": "c3a7a5bf-276a-415e-bf99-53108c277561"
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Read itinerary</a><input type="hidden" name="action" value="admin_itinerary_read" /><input type="hidden" name="payload" value='{
+        "id": ""
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Create itinerary item</a><input type="hidden" name="action" value="admin_item_create" /><input type="hidden" name="payload" value='{
+        "title": "Moderated Discussion",
+        "start_date": "2020-08-21 08:00:00",
+        "end_date": "2020-08-21 09:00:00",
+        "itinerary": "uuid|required",
+        "landing_page": "uuid|optional",
+        "type": "chat",
+        "configuration": {
+          "moderation": "post-moderate",
+          "moderators": [
+            "091e8b52-8506-4512-b75e-149ee51c4f04"
+          ],
+          "threads": true,
+          "private": true
+        }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Update itinerary item</a><input type="hidden" name="action" value="admin_item_update" /><input type="hidden" name="payload" value='{
+        "name": "event-name",
+        "website": "www.example.com",
+        "organisation": "c3a7a5bf-276a-415e-bf99-53108c277561"
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Read itinerary item</a><input type="hidden" name="action" value="admin_item_read" /><input type="hidden" name="payload" value='{
+        "id": ""
       }' /></li>
     </ul>
     <h3>Action: <span id="action" /></h3>
