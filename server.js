@@ -290,7 +290,7 @@ io.on('connection', (socket) => {
           const validation = commandProps.validation;
           const acl = commandProps.acl;
           if (action === 'item') {
-            topic = itemTypeConfig[payload.type];
+            topic = itemTypeConfig[payload.type].topic;
           }
           try {
             const user = Object.assign({}, rooms[socket.request._query['x-auth']], { socket: undefined });
