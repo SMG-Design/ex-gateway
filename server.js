@@ -243,6 +243,20 @@ function pull(
 
 pull();
 
+const verifyUser = async (token) => {
+  const config = {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  };
+  const resp = await axios.get(`${exauthURL}/auth/user`, config);
+  if (resp.status !== 200) {
+    throw new Error('not logged in');
+  }
+  const exauthUser = resp.data;
+  return exauthUser;
+}
+
 // middleware
 io.use((socket, next) => {
   let token = socket.handshake.query['x-auth'];
@@ -253,20 +267,11 @@ io.use((socket, next) => {
 io.on('connection', (socket) => {
   // AUTHORIZE
   socket.on('authorize', async ({ method, token }) => {
-    const config = {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    };
 
     if (method === 'oauth2') {
       // need to do actual logic to verify the user here
       try {
-        const resp = await axios.get(`${exauthURL}/auth/user`, config);
-        if (resp.status !== 200) {
-          throw new Error('not logged in');
-        }
-        const exauthUser = resp.data;
+        const exauthUser = await verifyUser(token);
         socket.emit('authorized', exauthUser);
         rooms[token] = { ...exauthUser, token, socket };
         socket.join(socket.id);
@@ -293,9 +298,13 @@ io.on('connection', (socket) => {
             topic = itemTypeConfig[payload.type].topic;
           }
           try {
-            const user = Object.assign({}, rooms[socket.request._query['x-auth']], { socket: undefined });
+            const token = socket.request._query['x-auth'];
+            if (!rooms[token].public_id) {
+              const exauthUser = await verifyUser(token);
+              rooms[token] = { ...exauthUser, token, socket };
+            }
+            const user = Object.assign({}, rooms[token], { socket: undefined });
             delete user[socket];
-            console.log('user', user);
             const messageId = await push(topic, { domain, action, command, payload, user, socketId: socket.id });
             console.log(messageId);
             console.log(`${domain}_${action}_${command}`, { status: 202, topic, messageId });

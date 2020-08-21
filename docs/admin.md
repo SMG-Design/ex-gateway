@@ -16,9 +16,11 @@ Authorization is required and permissions granted for the logged in user to carr
 
 This section is used for CRUD tasks relating to an organisation
 
-*Send*
+#### Send
+
 `admin_organisation_create` - Create a new organisation.
-*Payload*
+
+#### Payload
 
 ```JSON
 {
@@ -794,9 +796,12 @@ This section is used for CRUD tasks relating to an event itinerary items
 
 ```JSON
 {
-  "moderators": ["uuid|required"],
+  "moderation": "string|required",
+  "moderators": ["uuid|optional"],
   "max_rooms": integer,
-  "max_members": integer
+  "max_members": integer,
+  "threads": boolean,
+  "private": boolean
 }
 ```
 

@@ -100,9 +100,20 @@
         }
       }' /></li>
       <li><a href="#" class="action" onclick="actionClick(this)">Update itinerary item</a><input type="hidden" name="action" value="admin_item_update" /><input type="hidden" name="payload" value='{
-        "name": "event-name",
-        "website": "www.example.com",
-        "organisation": "c3a7a5bf-276a-415e-bf99-53108c277561"
+        "id": "",
+        "title": "Moderated Discussion",
+        "start_date": "2020-08-21 08:00:00",
+        "end_date": "2020-08-21 09:00:00",
+        "itinerary": "90fea305-ecf2-420b-b143-b8496180a963",
+        "type": "chat",
+        "configuration": {
+          "moderation": "post-moderate",
+          "moderators": [
+            "091e8b52-8506-4512-b75e-149ee51c4f04"
+          ],
+          "threads": true,
+          "private": true
+        }
       }' /></li>
       <li><a href="#" class="action" onclick="actionClick(this)">Read itinerary item</a><input type="hidden" name="action" value="admin_item_read" /><input type="hidden" name="payload" value='{
         "id": ""
