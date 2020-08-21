@@ -295,7 +295,9 @@ io.on('connection', (socket) => {
           try {
             const user = Object.assign({}, rooms[socket.request._query['x-auth']], { socket: undefined });
             delete user[socket];
+            console.log('user', user);
             const messageId = await push(topic, { domain, action, command, payload, user, socketId: socket.id });
+            console.log(messageId);
             console.log(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
             socket.emit(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
           } catch (error) {
