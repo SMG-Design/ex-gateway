@@ -850,7 +850,7 @@ This section is used for CRUD tasks relating to an event itinerary items
 
 #### Send
 
-`admin_itinerary_read` - Retrieve 1 or many itineraries.
+`admin_item_read` - Retrieve 1 or many itineraries.
 
 #### Payload
 
@@ -860,13 +860,14 @@ This section is used for CRUD tasks relating to an event itinerary items
   "organisation": "uuid|optional",
   "event": "uuid|optional",
   "start_date": "datetime|optional",
-  "end_date": "datetime|optional"
+  "end_date": "datetime|optional",
+  "type": "enum|item_types|required",
 }
 ```
 
 #### Receive
 
-`admin_itinerary_read`
+`admin_item_read`
 
 #### Successful Payload - Many
 

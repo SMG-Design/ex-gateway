@@ -24,6 +24,7 @@
       <input type="button" onclick="authUser(this)" value="Authorise" />
     </form>
     <pre id="authResponse"></pre>
+    <h2>Admin</h2>
     <ul>
       <li><a href="#" class="action" onclick="actionClick(this)">Authorize User</a><input type="hidden" name="action" value="authorize" /><input type="hidden" name="payload" value='{
         "method": "oauth2",
@@ -100,23 +101,45 @@
         }
       }' /></li>
       <li><a href="#" class="action" onclick="actionClick(this)">Update itinerary item</a><input type="hidden" name="action" value="admin_item_update" /><input type="hidden" name="payload" value='{
-        "id": "",
-        "title": "Moderated Discussion",
-        "start_date": "2020-08-21 08:00:00",
-        "end_date": "2020-08-21 09:00:00",
-        "itinerary": "90fea305-ecf2-420b-b143-b8496180a963",
-        "type": "chat",
-        "configuration": {
-          "moderation": "post-moderate",
-          "moderators": [
-            "091e8b52-8506-4512-b75e-149ee51c4f04"
-          ],
-          "threads": true,
-          "private": true
-        }
+        "id": "VmVUhITQJfBSx8xx8NHp",
+        "title": "Moderated Discussion 2",
+        "type": "chat"
       }' /></li>
       <li><a href="#" class="action" onclick="actionClick(this)">Read itinerary item</a><input type="hidden" name="action" value="admin_item_read" /><input type="hidden" name="payload" value='{
-        "id": ""
+        "id": "VmVUhITQJfBSx8xx8NHp",
+        "type": "chat"
+      }' /></li>
+    </ul>
+    <h2>Consumer</h2>
+    <ul>
+      <li><a href="#" class="action" onclick="actionClick(this)">Event get by organisation</a><input type="hidden" name="action" value="consumer_event_get" /><input type="hidden" name="payload" value='{
+        "organisation": "c3a7a5bf-276a-415e-bf99-53108c277561"
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Event get by id</a><input type="hidden" name="action" value="consumer_event_get" /><input type="hidden" name="payload" value='{
+        "id": "a3266498-2fb2-4621-90cd-004083ab5f75"
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Itinerary get by event</a><input type="hidden" name="action" value="consumer_itinerary_get" /><input type="hidden" name="payload" value='{
+        "event": "a3266498-2fb2-4621-90cd-004083ab5f75"
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Itinerary get by id</a><input type="hidden" name="action" value="consumer_itinerary_get" /><input type="hidden" name="payload" value='{
+        "id": "90fea305-ecf2-420b-b143-b8496180a963"
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Chat join</a><input type="hidden" name="action" value="consumer_chat_get" /><input type="hidden" name="payload" value='{
+        "id": "v8DdwIuJPwzFMnF7iR94"
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Chat send</a><input type="hidden" name="action" value="consumer_chat_send" /><input type="hidden" name="payload" value='{
+        "id": "v8DdwIuJPwzFMnF7iR94",
+        "data": {
+          "message": "string"
+        }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Chat reply</a><input type="hidden" name="action" value="consumer_chat_send" /><input type="hidden" name="payload" value='{
+        "id": "v8DdwIuJPwzFMnF7iR94",
+        "data": {
+          "message": "string",
+          "parent": "v8DdwIuJPwzFMnF7iR94",
+          "private": true
+        }
       }' /></li>
     </ul>
     <h3>Action: <span id="action" /></h3>

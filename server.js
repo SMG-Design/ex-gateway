@@ -176,22 +176,27 @@ const actions = {
       delete: {}
     }
   },
-  attendee: {
+  consumer: {
     event: {
-
+      get: {
+        topic: 'ex-manage'
+      }
     },
     itinerary: {
-
-    },
-    item: {
-
+      get: {
+        topic: 'ex-manage'
+      }
     },
     chat: {
-      receive: {
-
+      get: {
+        callback(socket, { id }) {
+          socket.join(id);
+        }
       },
       send: {
-
+        callback (socket, { id, data }) {
+          io.to(id).emit('consumer_chat_receive', data);
+        }
       }
     }
   }
@@ -294,10 +299,23 @@ io.on('connection', (socket) => {
           let topic = commandProps.topic;
           const validation = commandProps.validation;
           const acl = commandProps.acl;
-          if (action === 'item') {
-            topic = itemTypeConfig[payload.type].topic;
-          }
           try {
+            if (action === 'item') {
+              if (!payload.type) {
+                // type is needed to know where to look for the data
+                throw new Error('type is required');
+              }
+              if (!itemTypeConfig[payload.type].topic) {
+                throw new Error('invalid type');
+              }
+              topic = itemTypeConfig[payload.type].topic;
+            }
+            if (!topic && itemTypeConfig[action]) {
+              topic = itemTypeConfig[action].topic;
+            }
+            if (commandProps.callback) {
+              commandProps.callback(socket, payload);
+            }
             const token = socket.request._query['x-auth'];
             if (!rooms[token].public_id) {
               const exauthUser = await verifyUser(token);
