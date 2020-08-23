@@ -20,6 +20,9 @@ const itemTypes = ['rtmp', 'zoom', 'webrtc', 'video', 'forum', 'chat', 'html'];
 
 const itemTypeConfig = {
   rtmp: {
+    topic: 'ex-streamer'
+  },
+  webrtc: {
     topic: 'ex-collab'
   },
   chat: {
@@ -198,6 +201,15 @@ const actions = {
           io.to(id).emit('consumer_chat_receive', data);
         }
       }
+    },
+    rtmp: {
+      get: {}
+    }
+  },
+  client: {
+    rtmp: {
+      get: {},
+      activate: {}
     }
   }
 };

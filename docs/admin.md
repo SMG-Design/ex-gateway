@@ -756,7 +756,9 @@ This section is used for CRUD tasks relating to an event itinerary items
 
 ```JSON
 {
-  "source_url": "url|optional"
+  "mode": "enum|rtmp_modes|required",
+  "broadcast": boolean,
+  "actor": "uuid|required"
 }
 ```
 
@@ -812,6 +814,11 @@ This section is used for CRUD tasks relating to an event itinerary items
   "source_code": "string|required"
 }
 ```
+
+##### rtmp_modes
+
+* record
+* live
 
 #### Receive
 

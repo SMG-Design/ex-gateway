@@ -85,7 +85,7 @@
       <li><a href="#" class="action" onclick="actionClick(this)">Read itinerary</a><input type="hidden" name="action" value="admin_itinerary_read" /><input type="hidden" name="payload" value='{
         "id": "90fea305-ecf2-420b-b143-b8496180a963"
       }' /></li>
-      <li><a href="#" class="action" onclick="actionClick(this)">Create itinerary item</a><input type="hidden" name="action" value="admin_item_create" /><input type="hidden" name="payload" value='{
+      <li><a href="#" class="action" onclick="actionClick(this)">Create itinerary item (chat)</a><input type="hidden" name="action" value="admin_item_create" /><input type="hidden" name="payload" value='{
         "title": "Moderated Discussion",
         "start_date": "2020-08-21 08:00:00",
         "end_date": "2020-08-21 09:00:00",
@@ -100,14 +100,71 @@
           "private": true
         }
       }' /></li>
-      <li><a href="#" class="action" onclick="actionClick(this)">Update itinerary item</a><input type="hidden" name="action" value="admin_item_update" /><input type="hidden" name="payload" value='{
+      <li><a href="#" class="action" onclick="actionClick(this)">Update itinerary item (chat)</a><input type="hidden" name="action" value="admin_item_update" /><input type="hidden" name="payload" value='{
         "id": "VmVUhITQJfBSx8xx8NHp",
         "title": "Moderated Discussion 2",
         "type": "chat"
       }' /></li>
-      <li><a href="#" class="action" onclick="actionClick(this)">Read itinerary item</a><input type="hidden" name="action" value="admin_item_read" /><input type="hidden" name="payload" value='{
+      <li><a href="#" class="action" onclick="actionClick(this)">Read itinerary item (chat)</a><input type="hidden" name="action" value="admin_item_read" /><input type="hidden" name="payload" value='{
         "id": "VmVUhITQJfBSx8xx8NHp",
         "type": "chat"
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Create itinerary item (rtmp - broadcast only)</a><input type="hidden" name="action" value="admin_item_create" /><input type="hidden" name="payload" value='{
+        "title": "Moderated Discussion",
+        "start_date": "2020-08-21 08:00:00",
+        "end_date": "2020-08-21 09:00:00",
+        "itinerary": "90fea305-ecf2-420b-b143-b8496180a963",
+        "type": "rtmp",
+        "configuration": {
+          "mode": "live",
+          "actor": "091e8b52-8506-4512-b75e-149ee51c4f04"
+        }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Create itinerary item (rtmp - record only)</a><input type="hidden" name="action" value="admin_item_create" /><input type="hidden" name="payload" value='{
+        "title": "Moderated Discussion",
+        "start_date": "2020-08-21 08:00:00",
+        "end_date": "2020-08-21 09:00:00",
+        "itinerary": "90fea305-ecf2-420b-b143-b8496180a963",
+        "type": "rtmp",
+        "configuration": {
+          "mode": "record",
+          "actor": "091e8b52-8506-4512-b75e-149ee51c4f04"
+        }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Create itinerary item (rtmp - broadcast and record)</a><input type="hidden" name="action" value="admin_item_create" /><input type="hidden" name="payload" value='{
+        "title": "Moderated Discussion",
+        "start_date": "2020-08-21 08:00:00",
+        "end_date": "2020-08-21 09:00:00",
+        "itinerary": "90fea305-ecf2-420b-b143-b8496180a963",
+        "type": "rtmp",
+        "configuration": {
+          "mode": "record",
+          "broadcast": true,
+          "actor": "091e8b52-8506-4512-b75e-149ee51c4f04"
+        }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Update itinerary item (rtmp)</a><input type="hidden" name="action" value="admin_item_update" /><input type="hidden" name="payload" value='{
+        "id": "cREtpfUXYiS8wdSSDELV",
+        "title": "Itinerary live stream 1",
+        "type": "rtmp",
+        "configuration": {
+          "mode": "record",
+          "broadcast": true,
+          "actor": "091e8b52-8506-4512-b75e-149ee51c4f04"
+        }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Read itinerary item (rtmp)</a><input type="hidden" name="action" value="admin_item_read" /><input type="hidden" name="payload" value='{
+        "id": "cREtpfUXYiS8wdSSDELV",
+        "type": "rtmp"
+      }' /></li>
+    </ul>
+    <h2>Client</h2>
+    <ul>
+      <li><a href="#" class="action" onclick="actionClick(this)">RTMP get URL</a><input type="hidden" name="action" value="client_rtmp_get" /><input type="hidden" name="payload" value='{
+        "id": "cREtpfUXYiS8wdSSDELV"
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">RTMP activate</a><input type="hidden" name="action" value="client_rtmp_activate" /><input type="hidden" name="payload" value='{
+        "id": "cREtpfUXYiS8wdSSDELV"
       }' /></li>
     </ul>
     <h2>Consumer</h2>
@@ -140,6 +197,9 @@
           "parent": "v8DdwIuJPwzFMnF7iR94",
           "private": true
         }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">RTMP join</a><input type="hidden" name="action" value="consumer_rtmp_get" /><input type="hidden" name="payload" value='{
+        "id": "cREtpfUXYiS8wdSSDELV"
       }' /></li>
     </ul>
     <h3>Action: <span id="action" /></h3>
