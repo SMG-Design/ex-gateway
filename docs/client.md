@@ -28,7 +28,7 @@ This section is used to manage an actor beginning a stream
 }
 ```
 
-#### Receiv
+#### Receive
 
 `client_rtmp_get`
 
@@ -68,7 +68,9 @@ This section is used to manage an actor beginning a stream
 
 ```JSON
 {
-  "id": "uuid|itinerary"
+  "id": "uuid|itinerary",
+  "sessionId": "string|required",
+  "streamUrl": "string|required"
 }
 ```
 
@@ -123,6 +125,41 @@ This section is used to manage an actor beginning a stream
     "id": "a3266498-2fb2-4621-90cd-004083ab5f75",
     "url": "internal_hls_url",
     "status": "recording"
+  }
+}
+```
+
+#### Send - Called automatically by the RTMP streaming service
+
+`client_rtmp_complete`
+
+#### Payload
+
+```JSON
+{
+  "id": "uuid|itinerary",
+  "sessionId": "string|required",
+  "streamUrl": "string|required"
+}
+```
+
+#### Receive
+
+`client_rtmp_complete`
+
+#### Payload
+
+```JSON
+{
+  "status": 200,
+  "meta": {
+    "permitted": true,
+    "message": "complete"
+  },
+  "response": {
+    "id": "a3266498-2fb2-4621-90cd-004083ab5f75",
+    "recordingUrl": "mp4_url",
+    "status": "complete"
   }
 }
 ```
