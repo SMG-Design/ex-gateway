@@ -238,16 +238,22 @@ function pull(
     console.log(`Received message ${message.id}:`);
     messageCount += 1;
     const body = message.data ? JSON.parse(Buffer.from(message.data, 'base64').toString()) : null;
+    if (!body.user) {
+      console.log(body);
+      message.ack();
+      return true;
+    }
     if (rooms[body.user.token]) {
       console.log('pushing to socket', body.socketId, Object.keys(rooms));
       const socket = rooms[body.user.token].socket;
       socket.emit(`${body.domain}_${body.action}_${body.command}`, body);
+      // "Ack" (acknowledge receipt of) the message
+      message.ack();
     } else {
       // socket not found
       console.log('socket not found', body);
+      message.nack();
     }
-    // "Ack" (acknowledge receipt of) the message
-    message.ack();
   };
   subscription.on('message', messageHandler);
   // regurgitate the handler occasionally \\
