@@ -8,8 +8,10 @@ const projectId = 'stoked-reality-284921';
 const io = require('socket.io')(process.env.PORT || 8880, {
   serveClient: false
 });
+const redis = require('socket.io-redis');
 const axios = require('axios');
 const exauthURL = process.env.EXAUTH;
+io.adapter(redis({ host: process.env.EXGATEWAYCACHEIP, port: process.env.EXGATEWAYCACHEPORT }));
 
 // Instantiates a client
 const pubsub = new PubSub({grpc, projectId});
