@@ -245,17 +245,8 @@ function pull(
       message.ack();
       return true;
     }
-    if (rooms[body.user.token]) {
-      console.log('pushing to socket', body.socketId, Object.keys(rooms));
-      const socket = rooms[body.user.token].socket;
-      socket.emit(`${body.domain}_${body.action}_${body.command}`, body);
-      // "Ack" (acknowledge receipt of) the message
-      message.ack();
-    } else {
-      // socket not found
-      console.log('socket not found', body);
-      message.nack();
-    }
+    io.in(body.user.id).emit(`${body.domain}_${body.action}_${body.command}`, body);
+    message.ack();
   };
   subscription.on('message', messageHandler);
   // regurgitate the handler occasionally \\
@@ -289,7 +280,19 @@ io.use((socket, next) => {
   next();
 });
 
-io.on('connection', (socket) => {
+io.on('reconnect', async (socket) => {
+  console.log('reconnect');
+  try {
+    const exauthUser = await verifyUser(token);
+    socket.emit('authorized', exauthUser);
+    socket.join(exauthUser.id);
+  } catch (error) {
+    console.log(error);
+    socket.emit('unauthorized', { error: error.message });
+  }
+});
+
+io.on('connection', async (socket) => {
   // AUTHORIZE
   socket.on('authorize', async ({ method, token }) => {
 
@@ -298,8 +301,7 @@ io.on('connection', (socket) => {
       try {
         const exauthUser = await verifyUser(token);
         socket.emit('authorized', exauthUser);
-        rooms[token] = { ...exauthUser, token, socket };
-        socket.join(socket.id);
+        socket.join(exauthUser.id);
       } catch (error) {
         console.log(error);
         socket.emit('unauthorized', { error: error.message });
@@ -337,12 +339,10 @@ io.on('connection', (socket) => {
               commandProps.callback(socket, payload);
             }
             const token = socket.request._query['x-auth'];
-            if (!rooms[token].public_id) {
-              const exauthUser = await verifyUser(token);
-              rooms[token] = { ...exauthUser, token, socket };
+            const user = await verifyUser(token);
+            if (!Object.keys(socket.rooms).includes(user.id)) {
+              socket.join(user.id);
             }
-            const user = Object.assign({}, rooms[token], { socket: undefined });
-            delete user[socket];
             const messageId = await push(topic, { domain, action, command, payload, user, socketId: socket.id });
             console.log(messageId);
             console.log(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
