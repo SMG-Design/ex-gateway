@@ -1,6 +1,7 @@
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
+const { v4: uuidv4 } = require('uuid');
 // Imports the Google Cloud client library
 const {PubSub} = require('@google-cloud/pubsub');
 const grpc = require('grpc');
@@ -199,6 +200,12 @@ const actions = {
         }
       },
       send: {
+        prepare (user, payload) {
+          payload.data.sent = new Date();
+          payload.data.from = user;
+          payload.data.uuid = uuidv4();
+          return payload;
+        },
         callback (socket, { id, data }) {
           io.to(id).emit('consumer_chat_receive', data);
         }
@@ -335,13 +342,16 @@ io.on('connection', async (socket) => {
             if (!topic && itemTypeConfig[action]) {
               topic = itemTypeConfig[action].topic;
             }
-            if (commandProps.callback) {
-              commandProps.callback(socket, payload);
-            }
             const token = socket.request._query['x-auth'];
             const user = await verifyUser(token);
             if (!Object.keys(socket.rooms).includes(user.id)) {
               socket.join(user.id);
+            }
+            if (commandProps.prepare) {
+              payload = commandProps.prepare(user, payload);
+            }
+            if (commandProps.callback) {
+              commandProps.callback(socket, payload);
             }
             const messageId = await push(topic, { domain, action, command, payload, user, socketId: socket.id });
             console.log(messageId);
