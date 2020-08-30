@@ -344,6 +344,7 @@ io.on('connection', async (socket) => {
             }
             const token = socket.request._query['x-auth'];
             const user = await verifyUser(token);
+            user.token = token;
             if (!Object.keys(socket.rooms).includes(user.id)) {
               socket.join(user.id);
             }
@@ -353,6 +354,7 @@ io.on('connection', async (socket) => {
             if (commandProps.callback) {
               commandProps.callback(socket, payload);
             }
+            console.log('sending message', { domain, action, command, payload, user, socketId: socket.id });
             const messageId = await push(topic, { domain, action, command, payload, user, socketId: socket.id });
             console.log(messageId);
             console.log(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
