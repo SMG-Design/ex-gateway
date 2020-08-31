@@ -18,6 +18,11 @@
       <li><a href="#" class="env" onclick="setEnv('alpha_gcp')">Alpha GCP</a></li>
     </ul>
     <h2>Login</h2>
+    <form id="requestForm">
+      <input type="text" name="username" placeholder="username" />
+      <input type="button" onclick="requestLogin(this)" value="Request" />
+    </form>
+    <pre id="requestResponse"></pre>
     <form id="authForm">
       <input type="text" name="username" placeholder="username" /><br />
       <input type="password" name="password" placeholder="password" />
@@ -227,6 +232,27 @@
       const setEnv = (setEnv) => {
         env = envs[setEnv];
       }
+      const requestLogin = async () => {
+        const form = document.querySelector('#requestForm');
+        const username = form.querySelector("input[name='username']").value;
+        const auth = await fetch(`${env.auth}/auth/login?username=${username}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Basic NDJkMTYwNWQtNDJmYS00OWFlLTliNjktNTkxNGJjNjY5OWRhOmY4NjFkY2FhNTU2Y2VlNmE2YTFhMDAyNmVmNTU2NjBkNmVkZDAwMTc5NmZiZGY3Mw=='
+          }
+        });
+        try {
+          const resp = await auth.json();
+          if (resp.user_type === 'attendee' || resp.user_type === 'audience') {
+            const login = document.querySelector('#authForm');
+            login.querySelector("input[name='username']").value = resp.username;
+            login.querySelector("input[name='password']").value = resp.password;
+          }
+        } catch (error) {
+          document.getElementById('requestResponse').innerHTML = error;
+        }
+      }
       const authUser = async () => {
         const form = document.querySelector('#authForm');
         const username = form.querySelector("input[name='username']").value;
@@ -234,21 +260,20 @@
         const params = {
           username,
           password,
-          grant_type: 'password',
-          client_id: 'null',
-          client_secret: 'null'
+          grant_type: 'password'
         };
         const auth = await fetch(`${env.auth}/auth/login`, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Basic NDJkMTYwNWQtNDJmYS00OWFlLTliNjktNTkxNGJjNjY5OWRhOmY4NjFkY2FhNTU2Y2VlNmE2YTFhMDAyNmVmNTU2NjBkNmVkZDAwMTc5NmZiZGY3Mw=='
           },
           body: Object.keys(params).map(key => key + '=' + params[key]).join('&')
         });
         try {
           const resp = await auth.json();
-          if (resp.access_token) {
-            env.access_token = resp.access_token;
+          if (resp.accessToken) {
+            env.access_token = resp.accessToken;
             socket = io(`${env.gateway}?x-auth=${env.access_token}`);
             document.getElementById('authResponse').innerHTML = JSON.stringify(resp, null, 2);
             socket.emit(`authorize`, { method: 'oauth2', token: env.access_token });
