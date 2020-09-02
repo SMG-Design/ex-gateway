@@ -8,6 +8,6 @@ manual_scaling:
   instances: 1
 
 env_variables:
-  EXAUTH: https://ex-auth-dot-stoked-reality-284921.ew.r.appspot.com
-  EXGATEWAYCACHEIP: 10.190.131.244
-  EXGATEWAYCACHEPORT: 6379
+  EXAUTH: $EXAUTH
+  EXGATEWAYCACHEIP: $EXGATEWAYCACHEIP
+  EXGATEWAYCACHEPORT: $EXGATEWAYCACHEPORT
