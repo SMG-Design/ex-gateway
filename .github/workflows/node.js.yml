@@ -1,0 +1,49 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1.4.3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm test
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Create app.yaml
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: './app.yaml'
+        env:
+          env_variables.EXAUTH: ${{ secrets.EXAUTH }}
+          env_variables.EXGATEWAYCACHEIP: ${{ secrets.EXGATEWAYCACHEIP }}
+          env_variables.EXGATEWAYCACHEPORT: ${{ secrets.EXGATEWAYCACHEPORT }}
+
+#      - name: Deploy to GCP
+#        uses: actions-hub/gcloud@307.0.0
+#        env:
+#          PROJECT_ID: ${{secrets.GCLOUD_PROJECT_ID}}
+#          APPLICATION_CREDENTIALS: ${{secrets.GCLOUD_CREDENTIALS}}
+#        with:
+#          args: app deploy app.yaml
