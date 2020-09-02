@@ -4,6 +4,9 @@ env: flex
 network:
   name: default
 
+manual_scaling:
+  instances: 1
+
 env_variables:
   EXAUTH: $EXAUTH
   EXGATEWAYCACHEIP: $EXGATEWAYCACHEIP
