@@ -1,4 +1,3 @@
-service: ex-gateway
 runtime: nodejs
 env: flex
 
