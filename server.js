@@ -209,6 +209,11 @@ const actions = {
         callback (socket, { id, data }) {
           io.to(id).emit('consumer_chat_receive', data);
         }
+      },
+      remove: {
+        callback (socket, { id, data }) {
+          io.to(id).emit('consumer_chat_remove', data);
+        }
       }
     },
     rtmp: {
@@ -219,6 +224,13 @@ const actions = {
     rtmp: {
       get: {},
       activate: {}
+    },
+    chat: {
+      ban: {
+        callback (socket, { id, data }) {
+          io.to(id).emit('consumer_chat_remove', data);
+        }
+      }
     }
   }
 };
