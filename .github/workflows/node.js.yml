@@ -40,10 +40,10 @@ jobs:
           env_variables.EXGATEWAYCACHEIP: ${{ secrets.EXGATEWAYCACHEIP }}
           env_variables.EXGATEWAYCACHEPORT: ${{ secrets.EXGATEWAYCACHEPORT }}
 
-#      - name: Deploy to GCP
-#        uses: actions-hub/gcloud@307.0.0
-#        env:
-#          PROJECT_ID: ${{secrets.GCLOUD_PROJECT_ID}}
-#          APPLICATION_CREDENTIALS: ${{secrets.GCLOUD_CREDENTIALS}}
-#        with:
-#          args: app deploy app.yaml
+      - name: Deploy to GCP
+        uses: actions-hub/gcloud@307.0.0
+        env:
+          PROJECT_ID: ${{secrets.GCLOUD_PROJECT_ID}}
+          APPLICATION_CREDENTIALS: ${{secrets.GCLOUD_CREDENTIALS}}
+        with:
+          args: app deploy app.yaml
