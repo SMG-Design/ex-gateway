@@ -125,7 +125,7 @@
           "participants": [
             "091e8b52-8506-4512-b75e-149ee51c4f04"
           ],
-          "participant_only": true
+          "participants_only": true
         }
       }' /></li>
       <li><a href="#" class="action" onclick="actionClick(this)">Update itinerary item (chat dm)</a><input type="hidden" name="action" value="admin_item_update" /><input type="hidden" name="payload" value='{
@@ -139,6 +139,34 @@
         }
       }' /></li>
       <li><a href="#" class="action" onclick="actionClick(this)">Read itinerary item (chat dm)</a><input type="hidden" name="action" value="admin_item_read" /><input type="hidden" name="payload" value='{
+        "id": "VmVUhITQJfBSx8xx8NHp",
+        "type": "chat"
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Create itinerary item (chat round-robin) - this mode allows audience to request a chat and all the operators will be notified until the next available picks it up</a><input type="hidden" name="action" value="admin_item_create" /><input type="hidden" name="payload" value='{
+        "title": "Direct message session",
+        "start_date": "2020-08-21 08:00:00",
+        "end_date": "2020-08-21 09:00:00",
+        "itinerary": "90fea305-ecf2-420b-b143-b8496180a963",
+        "type": "chat",
+        "configuration": {
+          "mode": "direct",
+          "participants": [
+            "091e8b52-8506-4512-b75e-149ee51c4f04"
+          ],
+          "participant_only": true
+        }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Update itinerary item (chat round-robin)</a><input type="hidden" name="action" value="admin_item_update" /><input type="hidden" name="payload" value='{
+        "id": "VmVUhITQJfBSx8xx8NHp",
+        "title": "Help channel",
+        "type": "chat",
+        "configuration": {
+          "participants": [
+            "091e8b52-8506-4512-b75e-149ee51c4f04"
+          ]
+        }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Read itinerary item (chat round-robin)</a><input type="hidden" name="action" value="admin_item_read" /><input type="hidden" name="payload" value='{
         "id": "VmVUhITQJfBSx8xx8NHp",
         "type": "chat"
       }' /></li>
@@ -231,7 +259,7 @@
           "private": true
         }
       }' /></li>
-      <li><a href="#" class="action" onclick="actionClick(this)">Chat start (dm)</a><input type="hidden" name="action" value="consumer_chat_start" /><input type="hidden" name="payload" value='{
+      <li><a href="#" class="action" onclick="actionClick(this)">Chat start (dm) - can only be started between people allowed as participants if participants_only is set to true</a><input type="hidden" name="action" value="consumer_chat_start" /><input type="hidden" name="payload" value='{
         "id": "v8DdwIuJPwzFMnF7iR94",
         "participants": [
           "091e8b52-8506-4512-b75e-149ee51c4f04"
@@ -247,7 +275,25 @@
         "id": "v8DdwIuJPwzFMnF7iR94",
         "data": {
           "message": "string",
-          "parent": "v8DdwIuJPwzFMnF7iR94"
+          "parent": "90fea305-ecf2-420b-b143-b8496180a963"
+        }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Chat request (rount-robin) - audience will create a new request thats pending until picked up</a><input type="hidden" name="action" value="consumer_chat_start" /><input type="hidden" name="payload" value='{
+        "id": "v8DdwIuJPwzFMnF7iR94"
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Chat send (round-robin)</a><input type="hidden" name="action" value="consumer_chat_send" /><input type="hidden" name="payload" value='{
+        "id": "v8DdwIuJPwzFMnF7iR94",
+        "data": {
+          "instance": "v8DdwIuJPwzFMnF7iR94",
+          "message": "string"
+        }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Chat reply (round-robin)</a><input type="hidden" name="action" value="consumer_chat_send" /><input type="hidden" name="payload" value='{
+        "id": "v8DdwIuJPwzFMnF7iR94",
+        "data": {
+          "instance": "v8DdwIuJPwzFMnF7iR94",
+          "message": "string",
+          "parent": "90fea305-ecf2-420b-b143-b8496180a963"
         }
       }' /></li>
       <li><a href="#" class="action" onclick="actionClick(this)">RTMP join</a><input type="hidden" name="action" value="consumer_rtmp_get" /><input type="hidden" name="payload" value='{
