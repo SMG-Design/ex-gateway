@@ -207,12 +207,12 @@ const actions = {
           return payload;
         },
         callback (socket, { id, data }) {
-          io.to(id).emit('consumer_chat_receive', data);
+          io.to(id).emit('consumer_chat_receive', { id, ...data });
         }
       },
       remove: {
         callback (socket, { id, data }) {
-          io.to(id).emit('consumer_chat_remove', data);
+          io.to(id).emit('consumer_chat_remove', { id, ...data });
         }
       }
     },
@@ -228,7 +228,7 @@ const actions = {
     chat: {
       ban: {
         callback (socket, { id, data }) {
-          io.to(id).emit('consumer_chat_remove', data);
+          io.to(id).emit('consumer_chat_remove', { id, ...data });
         }
       }
     }
