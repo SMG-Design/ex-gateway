@@ -34,8 +34,10 @@ const itemTypeConfig = {
       moderation: ['enum', 'required', ['trust', 'post-moderate', 'pre-approve']],
       moderators: ['array', 'optional'],
       threads: ['boolean', 'optional'],
-      private: ['boolean', 'optional']
-    }
+      private: ['boolean', 'optional'],
+      participants: ['array', 'optional'],
+      data: ['object', 'optional'],
+    },
   },
   forum: {
     topic: 'ex-discussion',
@@ -199,6 +201,19 @@ const actions = {
           socket.join(id);
         }
       },
+      start: {
+        prepare (user, payload) {
+          payload.data.sent = new Date();
+          payload.data.from = user;
+          payload.data.uuid = uuidv4();
+          return payload;
+        },
+        callback (socket, { id, data }) {
+          if (data.data.instance) {
+            socket.join(data.data.instance);
+          }
+        },
+      },
       send: {
         prepare (user, payload) {
           payload.data.sent = new Date();
@@ -207,14 +222,18 @@ const actions = {
           return payload;
         },
         callback (socket, { id, data }) {
-          io.to(id).emit('consumer_chat_receive', { id, ...data });
-        }
+          if (data.data.instance) {
+            io.to(data.data.instance).emit('consumer_chat_receive', { id, ...data });
+          } else {
+            io.to(id).emit('consumer_chat_receive', { id, ...data });
+          }
+        },
       },
       remove: {
         callback (socket, { id, data }) {
           io.to(id).emit('consumer_chat_remove', { id, ...data });
-        }
-      }
+        },
+      },
     },
     rtmp: {
       get: {}
@@ -229,10 +248,17 @@ const actions = {
       ban: {
         callback (socket, { id, data }) {
           io.to(id).emit('consumer_chat_remove', { id, ...data });
+        },
+      },
+      activate: {
+        callback (socket, { id, data }) {
+          if (data.data.instance) {
+            socket.join(data.data.instance);
+          }
         }
-      }
-    }
-  }
+      },
+    },
+  },
 };
 
 function push(
