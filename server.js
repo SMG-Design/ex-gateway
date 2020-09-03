@@ -203,14 +203,23 @@ const actions = {
       },
       start: {
         prepare (user, payload) {
+          if (!payload.data) {
+            payload.data = {};
+          }
           payload.data.sent = new Date();
           payload.data.from = user;
-          payload.data.uuid = uuidv4();
+          payload.data.instance = uuidv4();
           return payload;
         },
-        callback (socket, { id, data }) {
-          if (data.data.instance) {
-            socket.join(data.data.instance);
+        callback(socket, { id, data }) {
+          socket.join(data.instance);
+        },
+        response (payload) {
+          if (payload.instance) {
+            // each user in the list of operators needs to be notified of this
+            payload.operators.forEach((operator) => {
+              io.to(operator).emit('client_chat_incoming', { ...payload });
+            });
           }
         },
       },
@@ -289,6 +298,10 @@ function pull(
       console.log(body);
       message.ack();
       return true;
+    }
+    // run the response if found for this action
+    if (actions[body.domain][body.action][body.command].response) {
+      actions[body.domain][body.action][body.command].response(body);
     }
     io.in(body.user.id).emit(`${body.domain}_${body.action}_${body.command}`, body);
     message.ack();
