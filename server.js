@@ -259,6 +259,7 @@ const actions = {
           io.to(id).emit('consumer_chat_remove', { id, ...data });
         },
       },
+      get: {},
       activate: {
         callback (socket, { id, data }) {
           if (data.data.instance) {
