@@ -219,6 +219,7 @@ const actions = {
           socket.join(data.instance);
         },
         response (payload) {
+          console.log('start response', payload);
           if (payload.instance) {
             // each user in the list of operators needs to be notified of this
             payload.operators.forEach((operator) => {
@@ -281,7 +282,7 @@ function push(
   topicName = 'ex-manage',
   data = {}
 ) {
-
+  data.source = process.env.SOURCE || 'app-engine';
   async function publishMessage() {
     const dataBuffer = Buffer.from(JSON.stringify(data));
 
@@ -304,6 +305,11 @@ function pull(
     if (!body.user) {
       console.log(body);
       message.ack();
+      return true;
+    }
+    if (body.source !== process.env.SOURCE) {
+      // we've picked up a message that was intended for another environment so return it
+      message.nack();
       return true;
     }
     // run the response if found for this action
@@ -336,7 +342,7 @@ const verifyUser = async (token) => {
   }
   const exauthUser = resp.data;
   return exauthUser;
-}
+};
 
 // middleware
 io.use((socket, next) => {
