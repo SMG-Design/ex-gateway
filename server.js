@@ -197,8 +197,12 @@ const actions = {
     },
     chat: {
       get: {
-        callback(socket, { id }) {
-          socket.join(id);
+        callback(socket, { id, data }) {
+          if (data && data.instance) {
+            socket.join(data.instance);
+          } else {
+            socket.join(id);
+          }
         }
       },
       start: {
@@ -228,11 +232,13 @@ const actions = {
           payload.data.sent = new Date();
           payload.data.from = user;
           payload.data.uuid = uuidv4();
+          console.log('preparing send', payload);
           return payload;
         },
         callback (socket, { id, data }) {
-          if (data.data.instance) {
-            io.to(data.data.instance).emit('consumer_chat_receive', { id, ...data });
+          console.log('consumer_chat_receive', data);
+          if (data.instance) {
+            io.to(data.instance).emit('consumer_chat_receive', { id, ...data });
           } else {
             io.to(id).emit('consumer_chat_receive', { id, ...data });
           }
@@ -262,8 +268,8 @@ const actions = {
       get: {},
       activate: {
         callback (socket, { id, data }) {
-          if (data.data.instance) {
-            socket.join(data.data.instance);
+          if (data.instance) {
+            socket.join(data.instance);
           }
         }
       },
@@ -406,7 +412,6 @@ io.on('connection', async (socket) => {
             if (commandProps.callback) {
               commandProps.callback(socket, payload);
             }
-            console.log('sending message', { domain, action, command, payload, user, socketId: socket.id });
             const messageId = await push(topic, { domain, action, command, payload, user, socketId: socket.id });
             console.log(messageId);
             console.log(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
