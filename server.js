@@ -219,10 +219,10 @@ const actions = {
           socket.join(data.instance);
         },
         response (user, payload) {
-          console.log('start response', payload);
           if (payload.data.instance) {
             // each user in the list of operators needs to be notified of this
             payload.data.operators.forEach((operator) => {
+              console.log('operator', operator);
               io.to(operator).emit('client_chat_incoming', { ...payload });
             });
           }
@@ -283,6 +283,7 @@ function push(
   data = {}
 ) {
   data.source = process.env.SOURCE || 'app-engine';
+  console.log(data);
   async function publishMessage() {
     const dataBuffer = Buffer.from(JSON.stringify(data));
 
@@ -293,7 +294,7 @@ function push(
   return publishMessage();
 }
 function pull(
-  subscriptionName = 'ex-gateway-subscription',
+  subscriptionName = `ex-gateway-subscription-${process.env.SOURCE}`,
   timeout = 60
 ) {
   const subscription = pubsub.subscription(subscriptionName);
@@ -303,14 +304,9 @@ function pull(
     const body = message.data ? JSON.parse(Buffer.from(message.data, 'base64').toString()) : null;
     console.log(`Received message ${message.id}: ${body.source}`);
     if (!body.user) {
+      // theres no user, we reject it but pull from the queue as nobody should have it
       console.log(body);
       message.ack();
-      return true;
-    }
-    if (body.source !== process.env.SOURCE) {
-      // we've picked up a message that was intended for another environment so return it
-      console.log(`${body.domain}_${body.action}_${body.command}`, 'picked up erroneously.');
-      message.nack();
       return true;
     }
     // run the response if found for this action
