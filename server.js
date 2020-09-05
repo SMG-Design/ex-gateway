@@ -218,11 +218,11 @@ const actions = {
         callback(socket, { id, data }) {
           socket.join(data.instance);
         },
-        response (payload) {
+        response (user, payload) {
           console.log('start response', payload);
-          if (payload.instance) {
+          if (payload.data.instance) {
             // each user in the list of operators needs to be notified of this
-            payload.operators.forEach((operator) => {
+            payload.data.operators.forEach((operator) => {
               io.to(operator).emit('client_chat_incoming', { ...payload });
             });
           }
@@ -299,9 +299,9 @@ function pull(
   const subscription = pubsub.subscription(subscriptionName);
   let messageCount = 0;
   const messageHandler = message => {
-    console.log(`Received message ${message.id}:`);
     messageCount += 1;
     const body = message.data ? JSON.parse(Buffer.from(message.data, 'base64').toString()) : null;
+    console.log(`Received message ${message.id}: ${body.source}`);
     if (!body.user) {
       console.log(body);
       message.ack();
@@ -309,12 +309,13 @@ function pull(
     }
     if (body.source !== process.env.SOURCE) {
       // we've picked up a message that was intended for another environment so return it
+      console.log(`${body.domain}_${body.action}_${body.command}`, 'picked up erroneously.');
       message.nack();
       return true;
     }
     // run the response if found for this action
     if (actions[body.domain][body.action][body.command].response) {
-      actions[body.domain][body.action][body.command].response(body);
+      actions[body.domain][body.action][body.command].response(body.user, body.payload);
     }
     io.in(body.user.id).emit(`${body.domain}_${body.action}_${body.command}`, body);
     message.ack();
