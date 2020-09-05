@@ -222,7 +222,6 @@ const actions = {
           if (payload.data.instance) {
             // each user in the list of operators needs to be notified of this
             payload.data.operators.forEach((operator) => {
-              console.log('operator', operator);
               io.to(operator).emit('client_chat_incoming', { ...payload });
             });
           }
@@ -272,7 +271,15 @@ const actions = {
           if (data.instance) {
             socket.join(data.instance);
           }
-        }
+        },
+        response (user, payload) {
+          if (payload.data.instance) {
+            // each user in the list of operators needs to be notified of this
+            payload.data.operators.forEach((operator) => {
+              io.to(operator).emit('client_chat_activated', { ...payload, user });
+            });
+          }
+        },
       },
     },
   },
@@ -302,7 +309,7 @@ function pull(
   const messageHandler = message => {
     messageCount += 1;
     const body = message.data ? JSON.parse(Buffer.from(message.data, 'base64').toString()) : null;
-    console.log(`Received message ${message.id}: ${body.source}`);
+    console.log(`Received message: ${message.id}`);
     if (!body.user) {
       // theres no user, we reject it but pull from the queue as nobody should have it
       console.log(body);
