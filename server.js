@@ -19,7 +19,7 @@ const pubsub = new PubSub({grpc, projectId});
 
 const rooms = {};
 
-const itemTypes = ['rtmp', 'zoom', 'webrtc', 'video', 'forum', 'chat', 'html'];
+const itemTypes = ['rtmp', 'zoom', 'webrtc', 'video', 'forum', 'chat', 'html', 'poll'];
 
 const itemTypeConfig = {
   rtmp: {
@@ -47,7 +47,15 @@ const itemTypeConfig = {
       threads: ['boolean', 'optional'],
       private: ['boolean', 'optional']
     }
-  }
+  },
+  poll: {
+    topic: 'ex-poll',
+    options: {
+      mode: ['enum', 'required', ['timed', 'poll', 'survey', 'quiz']],
+      show_responses: ['boolean', 'optional'],
+      questions: ['array', 'required'],
+    },
+  },
 };
 
 const actions = {
@@ -251,8 +259,16 @@ const actions = {
       },
     },
     rtmp: {
-      get: {}
-    }
+      get: {},
+    },
+    poll: {
+      get: {},
+      answer: {
+        callback (socket, { id, data }) {
+          io.to(id).emit('consumer_poll_answer', { id, ...data });
+        }
+      }
+    },
   },
   client: {
     rtmp: {
@@ -279,6 +295,13 @@ const actions = {
               io.to(operator).emit('client_chat_activated', { ...payload, user });
             });
           }
+        },
+      },
+    },
+    poll: {
+      listener: {
+        callback (socket, { id }) {
+          socket.join(id);
         },
       },
     },

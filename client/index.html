@@ -217,6 +217,85 @@
         "id": "cREtpfUXYiS8wdSSDELV",
         "type": "rtmp"
       }' /></li>
+
+      <li><a href="#" class="action" onclick="actionClick(this)">Create itinerary item (poll - timed questions)</a><input type="hidden" name="action" value="admin_item_create" /><input type="hidden" name="payload" value='{
+        "title": "Live stream opinion poll",
+        "start_date": "2020-09-09 14:00:00",
+        "end_date": "2020-09-09 17:00:00",
+        "itinerary": "90fea305-ecf2-420b-b143-b8496180a963",
+        "type": "poll",
+        "configuration": {
+          "mode": "timed",
+          "questions": [
+            {
+              "question": "What do you think of the current scenario?",
+              "answers": [
+                {
+                  "text": "Great",
+                  "order": 1
+                },
+                {
+                  "text": "OK",
+                  "order": 2
+                },
+                {
+                  "text": "Disappointing",
+                  "order": 3
+                }
+              ],
+              "order": 1,
+              "time": "2020-09-09 14:05:00"
+            },
+            {
+              "question": "A second question, really?",
+              "answers": [
+                {
+                  "text": "I love them",
+                  "order": 1
+                },
+                {
+                  "text": "Get this away",
+                  "order": 2
+                },
+                {
+                  "text": "Hide it!",
+                  "order": 3
+                }
+              ],
+              "order": 2,
+              "time": "2020-09-09 14:05:00"
+            },
+            {
+              "question": "And now a third, make it stop!",
+              "answers": [
+                {
+                  "text": "Yay",
+                  "order": 1
+                },
+                {
+                  "text": "Whoopdedoo",
+                  "order": 2
+                },
+                {
+                  "text": "Beautiful",
+                  "order": 3
+                }
+              ],
+              "order": 3,
+              "time": "2020-09-09 16:45:00"
+            }
+          ]
+        }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Update itinerary item (poll)</a><input type="hidden" name="action" value="admin_item_update" /><input type="hidden" name="payload" value='{
+        "id": "cREtpfUXYiS8wdSSDELV",
+        "title": "Live stream timed opinion poll",
+        "type": "poll"
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Read itinerary item (poll)</a><input type="hidden" name="action" value="admin_item_read" /><input type="hidden" name="payload" value='{
+        "id": "cREtpfUXYiS8wdSSDELV",
+        "type": "poll"
+      }' /></li>
     </ul>
     <h2>Client</h2>
     <ul>
@@ -237,6 +316,9 @@
         "data": {
           "instance": "d8ad68bd-9fcc-425e-b6ce-46c1c6ea7473"
         }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Poll listener - get notified for all answers for a poll</a><input type="hidden" name="action" value="client_poll_listener" /><input type="hidden" name="payload" value='{
+        "id": "cREtpfUXYiS8wdSSDELV"
       }' /></li>
     </ul>
     <h2>Consumer</h2>
@@ -312,6 +394,16 @@
       }' /></li>
       <li><a href="#" class="action" onclick="actionClick(this)">RTMP join</a><input type="hidden" name="action" value="consumer_rtmp_get" /><input type="hidden" name="payload" value='{
         "id": "cREtpfUXYiS8wdSSDELV"
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Poll questions</a><input type="hidden" name="action" value="consumer_poll_get" /><input type="hidden" name="payload" value='{
+        "id": "cREtpfUXYiS8wdSSDELV"
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Poll answer question</a><input type="hidden" name="action" value="consumer_poll_answer" /><input type="hidden" name="payload" value='{
+        "id": "cREtpfUXYiS8wdSSDELV",
+        "data": {
+          "question": "v8DdwIuJPwzFMnF7iR94",
+          "answer": "v8DdwIuJPwzFMnF7iR94"
+        }
       }' /></li>
     </ul>
     <h3>Action: <span id="action" /></h3>
