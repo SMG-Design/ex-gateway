@@ -313,7 +313,6 @@ function push(
   data = {}
 ) {
   data.source = process.env.SOURCE || 'app-engine';
-  console.log(data);
   async function publishMessage() {
     const dataBuffer = Buffer.from(JSON.stringify(data));
 
@@ -335,7 +334,7 @@ function pull(
     console.log(`Received message: ${message.id}`);
     if (!body.user) {
       // theres no user, we reject it but pull from the queue as nobody should have it
-      console.log(body);
+      console.log('no user', `${body.domain}_${body.action}_${body.command}`);
       message.ack();
       return true;
     }
