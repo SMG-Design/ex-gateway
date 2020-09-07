@@ -19,7 +19,7 @@ const pubsub = new PubSub({grpc, projectId});
 
 const rooms = {};
 
-const itemTypes = ['rtmp', 'zoom', 'webrtc', 'video', 'forum', 'chat', 'html', 'poll'];
+const itemTypes = ['rtmp', 'zoom', 'webrtc', 'video', 'forum', 'chat', 'html', 'poll', 'presentation'];
 
 const itemTypeConfig = {
   rtmp: {
