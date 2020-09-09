@@ -310,14 +310,14 @@ const actions = {
 
 function push(
   topicName = 'ex-manage',
-  data = {}
+  data = {},
+  source = process.env.SOURCE || 'app-engine'
 ) {
-  data.source = process.env.SOURCE || 'app-engine';
+  data.source = source;
   async function publishMessage() {
     const dataBuffer = Buffer.from(JSON.stringify(data));
 
-    const messageId = await pubsub.topic(topicName).publish(dataBuffer);
-    return messageId;
+    return await pubsub.topic(topicName).publish(dataBuffer);
   }
 
   return publishMessage();
@@ -366,8 +366,7 @@ const verifyUser = async (token) => {
   if (resp.status !== 200) {
     throw new Error('not logged in');
   }
-  const exauthUser = resp.data;
-  return exauthUser;
+  return resp.data;
 };
 
 // middleware
@@ -392,15 +391,17 @@ io.on('reconnect', async (socket) => {
 io.on('connection', async (socket) => {
   // AUTHORIZE
   socket.on('authorize', async ({ method, token }) => {
-
     if (method === 'oauth2') {
+      const command = 'authorize';
       // need to do actual logic to verify the user here
       try {
-        const exauthUser = await verifyUser(token);
-        socket.emit('authorized', exauthUser);
-        socket.join(exauthUser.id);
+        const user = await verifyUser(token);
+        await push('ex-monitoring', {event: {command, success: true}, auth: {token, user}, socketId: socket.id, timestamp: Date.now()});
+        socket.emit('authorized', user);
+        socket.join(user.id);
       } catch (error) {
         console.log(error);
+        await push('ex-monitoring', {event: {command, success: false}, auth: {token}, socketId: socket.id, timestamp: Date.now()});
         socket.emit('unauthorized', { error: error.message });
       }
     }
@@ -416,6 +417,7 @@ io.on('connection', async (socket) => {
         const commandProps = actions[domain][action][command];
         socket.on(`${domain}_${action}_${command}`, async (payload) => {
           let topic = commandProps.topic;
+          const token = socket.request._query['x-auth'];
           const validation = commandProps.validation;
           const acl = commandProps.acl;
           try {
@@ -432,9 +434,8 @@ io.on('connection', async (socket) => {
             if (!topic && itemTypeConfig[action]) {
               topic = itemTypeConfig[action].topic;
             }
-            const token = socket.request._query['x-auth'];
-            const user = await verifyUser(token);
-            user.token = token;
+            const exAuthUser = await verifyUser(token);
+            const user = {...exAuthUser, token};
             if (!Object.keys(socket.rooms).includes(user.id)) {
               socket.join(user.id);
             }
@@ -447,9 +448,11 @@ io.on('connection', async (socket) => {
             const messageId = await push(topic, { domain, action, command, payload, user, socketId: socket.id });
             console.log(messageId);
             console.log(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
+            await push('ex-monitoring', {event: {domain, action, command, topic, success: true}, auth: {token, user: exAuthUser}, socketId: socket.id, timestamp: Date.now()}, 'ex-gateway');
             socket.emit(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
           } catch (error) {
             console.error(error);
+            await push('ex-monitoring', {event: {domain, action, command, topic, success: false}, auth: {token}, socketId: socket.id, timestamp: Date.now()}, 'ex-gateway');
             socket.emit(`${domain}_${action}_${command}`, { status: 400, error: error.message });
           }
         });
