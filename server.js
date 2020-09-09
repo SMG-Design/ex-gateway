@@ -301,9 +301,10 @@ const actions = {
     poll: {
       listener: {
         callback (socket, { id }) {
-          socket.join(id);
+          socket.join(`${id}_response`);
         },
       },
+      get: {},
     },
   },
 };

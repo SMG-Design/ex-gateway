@@ -7,6 +7,8 @@ network:
 manual_scaling:
   instances: 1
 
+session_affinity: true
+
 resources:
   memory_gb: 4
 
