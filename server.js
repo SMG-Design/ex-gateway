@@ -25,6 +25,9 @@ const itemTypeConfig = {
   rtmp: {
     topic: 'ex-streamer'
   },
+  vod: {
+    topic: 'ex-streamer',
+  },
   webrtc: {
     topic: 'ex-collab'
   },
@@ -273,7 +276,10 @@ const actions = {
   client: {
     rtmp: {
       get: {},
-      activate: {}
+      activate: {},
+    },
+    vod: {
+      encode: {},
     },
     chat: {
       ban: {
