@@ -3,11 +3,10 @@ env: flex
 
 network:
   name: default
+  session_affinity: true
 
 manual_scaling:
   instances: 1
-
-session_affinity: true
 
 resources:
   memory_gb: 4
