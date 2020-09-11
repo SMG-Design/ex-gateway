@@ -28,6 +28,9 @@ const itemTypeConfig = {
   vod: {
     topic: 'ex-streamer',
   },
+  otf: {
+    topic: 'ex-streamer',
+  },
   webrtc: {
     topic: 'ex-collab'
   },
@@ -264,6 +267,9 @@ const actions = {
     rtmp: {
       get: {},
     },
+    otf: {
+      activate: {},
+    },
     poll: {
       get: {},
       answer: {
@@ -277,6 +283,7 @@ const actions = {
     rtmp: {
       get: {},
       activate: {},
+      otf: {},
     },
     vod: {
       encode: {},
