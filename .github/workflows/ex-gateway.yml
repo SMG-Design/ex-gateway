@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Ex-Gateway
 
 on:
   push:
@@ -25,6 +25,14 @@ jobs:
       - run: npm run build --if-present
       - run: npm test
 
+      - uses: act10ns/slack@v1
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          status: ${{ job.status }}
+          steps: ${{ toJson(steps) }}
+        if: always()
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
@@ -47,3 +55,11 @@ jobs:
           APPLICATION_CREDENTIALS: ${{secrets.GCLOUD_CREDENTIALS}}
         with:
           args: app deploy app.yaml
+
+      - uses: act10ns/slack@v1
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          status: ${{ job.status }}
+          steps: ${{ toJson(steps) }}
+        if: always()
