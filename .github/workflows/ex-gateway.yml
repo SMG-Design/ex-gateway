@@ -52,6 +52,7 @@ jobs:
           env_variables.EXGATEWAYCACHEPORT: ${{ secrets.EXGATEWAYCACHEPORT }}
 
       - name: Deploy to GCP
+        id: Deploy
         uses: actions-hub/gcloud@307.0.0
         env:
           PROJECT_ID: ${{secrets.GCLOUD_PROJECT_ID}}
