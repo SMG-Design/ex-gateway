@@ -264,6 +264,60 @@ const actions = {
         },
       },
     },
+    webrtc: {
+      get: {
+        callback(socket, { id, data }) {
+          if (data && data.instance) {
+            socket.join(data.instance);
+          } else {
+            socket.join(id);
+          }
+        }
+      },
+      start: {
+        prepare (user, payload) {
+          if (!payload.data) {
+            payload.data = {};
+          }
+          payload.data.instance = uuidv4();
+          return payload;
+        },
+        callback(socket, { id, data }) {
+          socket.join(data.instance);
+        },
+        response (user, payload) {
+          if (payload.data.instance) {
+            if (payload.data.configuration.mode === 'round-robin') {
+              // each user in the list of operators needs notifying
+              payload.data.operators.forEach((operator) => {
+                io.to(operator).emit('client_webrtc_incoming', { ...payload });
+              });
+            } else if (payload.data.configuration.mode === 'instant') {
+              payload.data.participants.forEach((contact) => {
+                io.to(contact).emit('consumer_webrtc_incoming', { ...payload });
+              });
+            }
+          }
+        },
+      },
+      accept: {
+        callback (socket, { id, data }) {
+          if (data.instance) {
+            socket.join(data.instance);
+          }
+        },
+        response (user, payload) {
+          if (payload.data.instance && payload.data.instance.status !== 'capacity_reached') {
+            if (payload.data.configuration.mode === 'round-robin') {
+              // each user in the list of operators needs to be notified of this
+              payload.data.operators.forEach((operator) => {
+                io.to(operator).emit('client_webrtc_joined', { ...payload, user });
+              });
+            }
+          }
+        },
+      },
+    },
     rtmp: {
       get: {},
     },
@@ -306,6 +360,47 @@ const actions = {
             // each user in the list of operators needs to be notified of this
             payload.data.operators.forEach((operator) => {
               io.to(operator).emit('client_chat_activated', { ...payload, user });
+            });
+          }
+        },
+      },
+    },
+    webrtc: {
+      get: {},
+      start: {
+        prepare (user, payload) {
+          if (!payload.data) {
+            payload.data = {};
+          }
+          payload.data.sent = new Date();
+          payload.data.from = user;
+          payload.data.instance = uuidv4();
+          return payload;
+        },
+        callback(socket, { id, data }) {
+          socket.join(data.instance);
+        },
+        response (user, payload) {
+          if (payload.data.instance) {
+            // each user in the list of contacts needs notifying
+            payload.data.participants.forEach((contact) => {
+              console.log(contact);
+              io.to(contact).emit('consumer_webrtc_incoming', { ...payload });
+            });
+          }
+        },
+      },
+      activate: {
+        callback (socket, { id, data }) {
+          if (data.instance) {
+            socket.join(data.instance);
+          }
+        },
+        response (user, payload) {
+          if (payload.data.instance && payload.data.instance.status !== 'capacity_reached') {
+            // each user in the list of operators needs to be notified of this
+            payload.data.operators.forEach((operator) => {
+              io.to(operator).emit('client_webrtc_activated', { ...payload, user });
             });
           }
         },

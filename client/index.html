@@ -226,7 +226,48 @@
         "id": "cREtpfUXYiS8wdSSDELV",
         "type": "rtmp"
       }' /></li>
-
+      <li><a href="#" class="action" onclick="actionClick(this)">Create itinerary item (video chat with next available operator)</a><input type="hidden" name="action" value="admin_item_create" /><input type="hidden" name="payload" value='{
+        "title": "Topic number 1",
+        "start_date": "2020-09-18 08:00:00",
+        "end_date": "2020-09-18 09:00:00",
+        "itinerary": "a6a94e7c-0ec4-4fec-994a-c49a327e8034",
+        "type": "webrtc",
+        "configuration": {
+          "mode": "round-robin",
+          "operators": [
+            "091e8b52-8506-4512-b75e-149ee51c4f04"
+          ]
+        }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Create itinerary item (video chat with instant creation)</a><input type="hidden" name="action" value="admin_item_create" /><input type="hidden" name="payload" value='{
+        "title": "Ad-hoc session",
+        "start_date": "2020-09-18 08:00:00",
+        "end_date": "2020-09-18 09:00:00",
+        "itinerary": "a6a94e7c-0ec4-4fec-994a-c49a327e8034",
+        "type": "webrtc",
+        "configuration": {
+          "mode": "instant",
+          "max_participants": 6
+        }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Read itinerary item (webrtc)</a><input type="hidden" name="action" value="admin_item_read" /><input type="hidden" name="payload" value='{
+        "id": "cREtpfUXYiS8wdSSDELV",
+        "type": "webrtc"
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Update itinerary item (rtmp)</a><input type="hidden" name="action" value="admin_item_update" /><input type="hidden" name="payload" value='{
+        "id": "cREtpfUXYiS8wdSSDELV",
+        "title": "Itinerary live stream 1",
+        "type": "rtmp",
+        "configuration": {
+          "mode": "record",
+          "broadcast": true,
+          "actor": "091e8b52-8506-4512-b75e-149ee51c4f04"
+        }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Read itinerary item (rtmp)</a><input type="hidden" name="action" value="admin_item_read" /><input type="hidden" name="payload" value='{
+        "id": "cREtpfUXYiS8wdSSDELV",
+        "type": "rtmp"
+      }' /></li>
       <li><a href="#" class="action" onclick="actionClick(this)">Create itinerary item (poll - timed questions)</a><input type="hidden" name="action" value="admin_item_create" /><input type="hidden" name="payload" value='{
         "title": "Live stream opinion poll",
         "start_date": "2020-09-09 14:00:00",
@@ -333,6 +374,14 @@
           "instance": "d8ad68bd-9fcc-425e-b6ce-46c1c6ea7473"
         }
       }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Webrtc start - initiate an instant call</a><input type="hidden" name="action" value="client_webrtc_start" /><input type="hidden" name="payload" value='{
+        "id": "YfpkOVBwHvBdKZ5PDfNP",
+        "data": {
+          "participants": [
+            "67ac40f3-8a49-4188-8fc3-d9608297ef55"
+          ]
+        }
+      }' /></li>
       <li><a href="#" class="action" onclick="actionClick(this)">Poll listener - get notified for all answers for a poll</a><input type="hidden" name="action" value="client_poll_listener" /><input type="hidden" name="payload" value='{
         "id": "cREtpfUXYiS8wdSSDELV"
       }' /></li>
@@ -408,6 +457,23 @@
           "parent": "a6a94e7c-0ec4-4fec-994a-c49a327e8034"
         }
       }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Webrtc accept - join a webrtc call and notify the requested attendees</a><input type="hidden" name="action" value="consumer_webrtc_accept" /><input type="hidden" name="payload" value='{
+        "id": "YfpkOVBwHvBdKZ5PDfNP",
+        "data": {
+          "instance": "d8ad68bd-9fcc-425e-b6ce-46c1c6ea7473"
+        }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Webrtc start - initiate an instant call</a><input type="hidden" name="action" value="consumer_webrtc_start" /><input type="hidden" name="payload" value='{
+        "id": "YfpkOVBwHvBdKZ5PDfNP",
+        "data": {
+          "participants": [
+            "67ac40f3-8a49-4188-8fc3-d9608297ef55"
+          ]
+        }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Webrtc start - initiate a round-robin call</a><input type="hidden" name="action" value="consumer_webrtc_start" /><input type="hidden" name="payload" value='{
+        "id": "YfpkOVBwHvBdKZ5PDfNP"
+      }' /></li>
       <li><a href="#" class="action" onclick="actionClick(this)">RTMP join</a><input type="hidden" name="action" value="consumer_rtmp_get" /><input type="hidden" name="payload" value='{
         "id": "cREtpfUXYiS8wdSSDELV"
       }' /></li>
@@ -432,6 +498,10 @@
     <script src="/node_modules/socket.io-client/dist/socket.io.js"></script>
     <script>
       let socket;
+      const clients = {
+        adobe: 'MTI3ZTQ0M2QtZTA2MS00ZjQwLWJiOWYtMDBlMjc1YWQ4OGMzOmI1Y2VhZTQzNDgxMDkzNmM1NGUzZTA0N2UyMTdhZWViY2U0MTcxYzBmNGM1YWVhZQ==',
+        netflix: 'M2ZkMGZkZTAtMTkxOC00OGIwLThmZDctOTYwZTMxN2UzNTYzOjExMjUwYmVkYWQzY2I1ZDc2NmQ1ZjdkMjc5ZWY3YjNjYmI0YWNjN2MxNzIzOGIwZA==',
+      };
       const envs = {
         local: {
           auth: "http://localhost:8881",
@@ -445,7 +515,7 @@
           auth: "https://ex-auth-dot-stoked-reality-284921.ew.r.appspot.com",
           gateway: "https://stoked-reality-284921.ew.r.appspot.com"
         }
-      }
+      };
       let env = envs.local;
       const setEnv = (setEnv) => {
         env = envs[setEnv];
@@ -457,7 +527,7 @@
           method: 'GET',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic M2ZkMGZkZTAtMTkxOC00OGIwLThmZDctOTYwZTMxN2UzNTYzOjExMjUwYmVkYWQzY2I1ZDc2NmQ1ZjdkMjc5ZWY3YjNjYmI0YWNjN2MxNzIzOGIwZA=='
+            'Authorization': `Basic ${clients.adobe}`
           }
         });
         try {
@@ -484,7 +554,7 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic M2ZkMGZkZTAtMTkxOC00OGIwLThmZDctOTYwZTMxN2UzNTYzOjExMjUwYmVkYWQzY2I1ZDc2NmQ1ZjdkMjc5ZWY3YjNjYmI0YWNjN2MxNzIzOGIwZA=='
+            'Authorization': `Basic ${clients.adobe}`
           },
           body: Object.keys(params).map(key => key + '=' + params[key]).join('&')
         });
