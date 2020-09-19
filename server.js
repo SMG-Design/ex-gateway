@@ -332,6 +332,22 @@ const actions = {
         }
       }
     },
+    online: {
+      users: {
+        topic: false,
+        compute(user, { type }) {
+          const sockets = (io.sockets.adapter.rooms[type]) ? io.sockets.adapter.rooms[type].sockets : {};
+          const userArr = {};
+          for (let socketId in sockets) {
+            if (sockets[socketId] === true && !userArr[io.sockets.connected[socketId].user.id]) {
+              const user = io.sockets.connected[socketId].user;
+              userArr[io.sockets.connected[socketId].user.id] = (({ email, ...user }) => user)(user);
+            }
+          }
+          return userArr;
+        },
+      },
+    },
   },
   client: {
     rtmp: {
@@ -478,19 +494,14 @@ const verifyUser = async (token) => {
   return resp.data;
 };
 
-// middleware
-io.use((socket, next) => {
-  let token = socket.handshake.query['x-auth'];
-  rooms[token] = { token, socket };
-  next();
-});
-
 io.on('reconnect', async (socket) => {
   console.log('reconnect');
   try {
     const exauthUser = await verifyUser(token);
     socket.emit('authorized', exauthUser);
     socket.join(exauthUser.id);
+    socket.join(exauthUser.user_type);
+    console.log(exauthUser.user_type);
   } catch (error) {
     console.log(error);
     socket.emit('unauthorized', { error: error.message });
@@ -508,6 +519,8 @@ io.on('connection', async (socket) => {
         await push('ex-monitoring', {event: {command, success: true}, auth: {token, user}, socketId: socket.id, timestamp: Date.now()});
         socket.emit('authorized', user);
         socket.join(user.id);
+        socket.join(user.user_type);
+        socket.user = user;
       } catch (error) {
         console.log(error);
         await push('ex-monitoring', {event: {command, success: false}, auth: {token}, socketId: socket.id, timestamp: Date.now()});
@@ -548,17 +561,24 @@ io.on('connection', async (socket) => {
             if (!Object.keys(socket.rooms).includes(user.id)) {
               socket.join(user.id);
             }
+            if (!Object.keys(socket.rooms).includes(user.user_type)) {
+              socket.join(user.user_type);
+            }
             if (commandProps.prepare) {
               payload = commandProps.prepare(user, payload);
             }
             if (commandProps.callback) {
               commandProps.callback(socket, payload);
             }
-            const messageId = await push(topic, { domain, action, command, payload, user, socketId: socket.id });
-            console.log(messageId);
-            console.log(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
+            if (topic !== false) {
+              const messageId = await push(topic, { domain, action, command, payload, user, socketId: socket.id });
+              console.log(messageId);
+              console.log(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
+              socket.emit(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
+            } else {
+              socket.emit(`${domain}_${action}_${command}`, { status: 200, payload: commandProps.compute(user, payload) });
+            }
             await push('ex-monitoring', {event: {domain, action, command, topic, success: true}, auth: {token, user: exAuthUser}, socketId: socket.id, timestamp: Date.now()}, 'ex-gateway');
-            socket.emit(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
           } catch (error) {
             console.error(error);
             await push('ex-monitoring', {event: {domain, action, command, topic, success: false}, auth: {token}, socketId: socket.id, timestamp: Date.now()}, 'ex-gateway');
