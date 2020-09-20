@@ -234,10 +234,12 @@ const actions = {
         },
         response (user, payload) {
           if (payload.data.instance) {
-            // each user in the list of operators needs to be notified of this
-            payload.data.operators.forEach((operator) => {
-              io.to(operator).emit('client_chat_incoming', { ...payload });
-            });
+            if (payload.data.operators) {
+              // each user in the list of operators needs to be notified of this
+              payload.data.operators.forEach((operator) => {
+                io.to(operator).emit('client_chat_incoming', { ...payload });
+              });
+            }
           }
         },
       },
