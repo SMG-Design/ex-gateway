@@ -239,7 +239,19 @@ const actions = {
               payload.data.operators.forEach((operator) => {
                 io.to(operator).emit('client_chat_incoming', { ...payload });
               });
+            } else if (payload.data.participants) {
+              // each user in the list of participants needs to be notified of the new room
+              payload.data.participants.forEach((participant) => {
+                io.to(participant).emit('consumer_chat_incoming', { ...payload });
+              });
             }
+          }
+        },
+      },
+      activate: {
+        callback (socket, { id, data }) {
+          if (data.instance) {
+            socket.join(data.instance);
           }
         },
       },
