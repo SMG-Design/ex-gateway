@@ -279,6 +279,7 @@ const actions = {
       },
     },
     webrtc: {
+      read: {},
       get: {
         callback(socket, { id, data }) {
           if (data && data.instance) {

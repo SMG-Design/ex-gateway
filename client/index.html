@@ -543,11 +543,9 @@
         });
         try {
           const resp = await auth.json();
-          if (resp.user_type === 'attendee' || resp.user_type === 'audience') {
-            const login = document.querySelector('#authForm');
-            login.querySelector("input[name='username']").value = resp.username;
-            login.querySelector("input[name='password']").value = resp.password;
-          }
+          const login = document.querySelector('#authForm');
+          login.querySelector("input[name='username']").value = resp.username;
+          login.querySelector("input[name='password']").value = resp.password;
         } catch (error) {
           document.getElementById('requestResponse').innerHTML = error;
         }
