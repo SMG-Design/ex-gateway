@@ -302,12 +302,12 @@ const actions = {
         },
         response (user, payload) {
           if (payload.data.instance) {
-            if (payload.data.configuration.mode === 'round-robin') {
+            if (payload.data.mode === 'round-robin') {
               // each user in the list of operators needs notifying
               payload.data.operators.forEach((operator) => {
                 io.to(operator).emit('client_webrtc_incoming', { ...payload });
               });
-            } else if (payload.data.configuration.mode === 'instant') {
+            } else if (payload.data.mode === 'instant') {
               payload.data.participants.forEach((contact) => {
                 io.to(contact).emit('consumer_webrtc_incoming', { ...payload });
               });
