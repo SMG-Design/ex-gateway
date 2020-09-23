@@ -305,11 +305,11 @@ const actions = {
             if (payload.data.mode === 'round-robin') {
               // each user in the list of operators needs notifying
               payload.data.operators.forEach((operator) => {
-                io.to(operator).emit('client_webrtc_incoming', { ...payload });
+                io.to(operator).emit('client_webrtc_incoming', { ...payload, user });
               });
             } else if (payload.data.mode === 'instant') {
               payload.data.participants.forEach((contact) => {
-                io.to(contact).emit('consumer_webrtc_incoming', { ...payload });
+                io.to(contact).emit('consumer_webrtc_incoming', { ...payload, user });
               });
             }
           }
