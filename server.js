@@ -308,9 +308,11 @@ const actions = {
                 io.to(operator).emit('client_webrtc_incoming', { ...payload, user });
               });
             } else if (payload.data.mode === 'instant') {
-              payload.data.participants.forEach((contact) => {
-                io.to(contact).emit('consumer_webrtc_incoming', { ...payload, user });
-              });
+              if (payload.data.participants) {
+                payload.data.participants.forEach((contact) => {
+                  io.to(contact).emit('consumer_webrtc_incoming', { ...payload, user });
+                });
+              }
             }
           }
         },
@@ -342,7 +344,7 @@ const actions = {
     poll: {
       get: {},
       answer: {
-        callback (socket, { id, data }) {
+        callback (_socket, { id, data }) {
           io.to(id).emit('consumer_poll_answer', { id, ...data });
         }
       }
@@ -350,13 +352,19 @@ const actions = {
     online: {
       users: {
         topic: false,
-        compute(user, { type }) {
+        compute(socket, user, { type }) {
           const sockets = (io.sockets.adapter.rooms[type]) ? io.sockets.adapter.rooms[type].sockets : {};
           const userArr = {};
+          if (!socket.user) {
+            socket.user = JSON.stringify(user);
+            console.log('setting socket user', socket);
+          }
           for (let socketId in sockets) {
-            if (sockets[socketId] === true && io.sockets.connected[socketId] && io.sockets.connected[socketId].user && !userArr[io.sockets.connected[socketId].user.id]) {
-              const user = io.sockets.connected[socketId].user;
-              userArr[io.sockets.connected[socketId].user.id] = (({ email, ...user }) => user)(user);
+            if (sockets[socketId] === true && io.sockets.connected[socketId] && io.sockets.connected[socketId].user) {
+              const userObj = JSON.parse(io.sockets.connected[socketId].user);
+              if (!userArr[userObj.id]) {
+                userArr[userObj.id] = (({ email, ...user }) => user)(userObj);
+              }
             }
           }
           return userArr;
@@ -510,14 +518,13 @@ const verifyUser = async (token) => {
 };
 
 io.on('reconnect', async (socket) => {
-  console.log('reconnect');
   try {
     const exauthUser = await verifyUser(token);
     socket.emit('authorized', exauthUser);
     socket.join(exauthUser.id);
     socket.join(exauthUser.user_type);
     console.log(exauthUser.user_type);
-    socket.user = exauthUser;
+    socket.user = JSON.stringify(exauthUser);
   } catch (error) {
     console.log(error);
     socket.emit('unauthorized', { error: error.message });
@@ -536,7 +543,7 @@ io.on('connection', async (socket) => {
         socket.emit('authorized', user);
         socket.join(user.id);
         socket.join(user.user_type);
-        socket.user = user;
+        socket.user = JSON.stringify(user);
       } catch (error) {
         console.log(error);
         await push('ex-monitoring', {event: {command, success: false}, auth: {token}, socketId: socket.id, timestamp: Date.now()});
@@ -592,7 +599,7 @@ io.on('connection', async (socket) => {
               console.log(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
               socket.emit(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
             } else {
-              socket.emit(`${domain}_${action}_${command}`, { status: 200, payload: commandProps.compute(user, payload) });
+              socket.emit(`${domain}_${action}_${command}`, { status: 200, payload: commandProps.compute(socket, user, payload) });
             }
             await push('ex-monitoring', {event: {domain, action, command, topic, success: true}, auth: {token, user: exAuthUser}, socketId: socket.id, timestamp: Date.now()}, 'ex-gateway');
           } catch (error) {
