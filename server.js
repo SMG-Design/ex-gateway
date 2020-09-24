@@ -354,7 +354,7 @@ const actions = {
           const sockets = (io.sockets.adapter.rooms[type]) ? io.sockets.adapter.rooms[type].sockets : {};
           const userArr = {};
           for (let socketId in sockets) {
-            if (sockets[socketId] === true && io.sockets.connected[socketId] && !userArr[io.sockets.connected[socketId].user.id]) {
+            if (sockets[socketId] === true && io.sockets.connected[socketId] && io.sockets.connected[socketId].user && !userArr[io.sockets.connected[socketId].user.id]) {
               const user = io.sockets.connected[socketId].user;
               userArr[io.sockets.connected[socketId].user.id] = (({ email, ...user }) => user)(user);
             }
@@ -517,6 +517,7 @@ io.on('reconnect', async (socket) => {
     socket.join(exauthUser.id);
     socket.join(exauthUser.user_type);
     console.log(exauthUser.user_type);
+    socket.user = exauthUser;
   } catch (error) {
     console.log(error);
     socket.emit('unauthorized', { error: error.message });
