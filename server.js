@@ -438,9 +438,11 @@ const actions = {
 function push(
   topicName = 'ex-manage',
   data = {},
+  eventId = null,
   source = process.env.SOURCE || 'app-engine'
 ) {
   data.source = source;
+  data.eventId = eventId;
   async function publishMessage() {
     const dataBuffer = Buffer.from(JSON.stringify(data));
 
@@ -449,6 +451,22 @@ function push(
 
   return publishMessage();
 }
+
+async function logEvent(eventData, authData, socketId) {
+  let eventId = '';
+  if (authData.user.eventId) {
+    eventId = authData.user.eventId;
+    delete authData.user.eventId;
+  }
+  const data = {
+    event: eventData,
+    auth: authData,
+    socketId: socketId,
+    timestamp: Date.now()
+  };
+  await push('ex-monitoring', data, eventId, 'ex-gateway');
+}
+
 function pull(
   subscriptionName = `ex-gateway-subscription-${process.env.SOURCE}`,
   timeout = 60
@@ -518,14 +536,14 @@ io.on('connection', async (socket) => {
       // need to do actual logic to verify the user here
       try {
         const user = await verifyUser(token);
-        await push('ex-monitoring', {event: {command, success: true}, auth: {token, user}, socketId: socket.id, timestamp: Date.now()});
+        await logEvent({command, success: true}, {token, user}, socket.id);
         socket.emit('authorized', user);
         socket.join(user.id);
         socket.join(user.user_type);
         socket.user = user;
       } catch (error) {
         console.log(error);
-        await push('ex-monitoring', {event: {command, success: false}, auth: {token}, socketId: socket.id, timestamp: Date.now()});
+        await logEvent({command, success: false}, {token}, socket.id);
         socket.emit('unauthorized', { error: error.message });
       }
     }
@@ -573,17 +591,17 @@ io.on('connection', async (socket) => {
               commandProps.callback(socket, payload);
             }
             if (topic !== false) {
-              const messageId = await push(topic, { domain, action, command, payload, user, socketId: socket.id });
+              const messageId = await push(topic, { domain, action, command, payload, user, socketId: socket.id }, user.eventId);
               console.log(messageId);
               console.log(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
               socket.emit(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
             } else {
               socket.emit(`${domain}_${action}_${command}`, { status: 200, payload: commandProps.compute(user, payload) });
             }
-            await push('ex-monitoring', {event: {domain, action, command, topic, success: true}, auth: {token, user: exAuthUser}, socketId: socket.id, timestamp: Date.now()}, 'ex-gateway');
+            await logEvent({domain, action, command, topic, success: true}, {token, user: exAuthUser}, socket.id);
           } catch (error) {
             console.error(error);
-            await push('ex-monitoring', {event: {domain, action, command, topic, success: false}, auth: {token}, socketId: socket.id, timestamp: Date.now()}, 'ex-gateway');
+            await push('ex-monitoring', {event: {domain, action, command, topic, success: false}, auth: {token}, socketId: socket.id, timestamp: Date.now()}, null, 'ex-gateway');
             socket.emit(`${domain}_${action}_${command}`, { status: 400, error: error.message });
           }
         });
