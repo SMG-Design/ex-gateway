@@ -510,6 +510,7 @@
     <script>
       let socket;
       const clients = {
+        sublime: 'MzcxZGZhYzMtNGY4NC00ZWY1LWE5NzktNTQ0Y2FjZTIxNjRkOjEzYTkxMjU3OWFkNjg5MGFkNGExNjNlMWY4YzVhN2Y0ZTYyOTYzNzI0ZmQ3YjFiOQ==',
         adobe: 'MTI3ZTQ0M2QtZTA2MS00ZjQwLWJiOWYtMDBlMjc1YWQ4OGMzOmI1Y2VhZTQzNDgxMDkzNmM1NGUzZTA0N2UyMTdhZWViY2U0MTcxYzBmNGM1YWVhZQ==',
         netflix: 'M2ZkMGZkZTAtMTkxOC00OGIwLThmZDctOTYwZTMxN2UzNTYzOjExMjUwYmVkYWQzY2I1ZDc2NmQ1ZjdkMjc5ZWY3YjNjYmI0YWNjN2MxNzIzOGIwZA==',
       };
@@ -538,7 +539,7 @@
           method: 'GET',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': `Basic ${clients.adobe}`
+            'Authorization': `Basic ${clients.sublime}`
           }
         });
         try {
@@ -557,13 +558,14 @@
         const params = {
           username,
           password,
+          eventId: '0bd12619-7f63-414c-8907-30b59aeb9380',
           grant_type: 'password'
         };
         const auth = await fetch(`${env.auth}/auth/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': `Basic ${clients.adobe}`
+            'Authorization': `Basic ${clients.sublime}`
           },
           body: Object.keys(params).map(key => key + '=' + params[key]).join('&')
         });
