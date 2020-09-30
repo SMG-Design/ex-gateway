@@ -475,7 +475,7 @@ function push(
 
 async function logEvent(eventData, authData, socketId) {
   let eventId = '';
-  if (authData.user.eventId) {
+  if (authData.user && authData.user.eventId) {
     eventId = authData.user.eventId;
     delete authData.user.eventId;
   }
