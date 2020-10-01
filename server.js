@@ -449,6 +449,16 @@ const actions = {
           }
         },
       },
+      end: {
+        response (user, payload) {
+          if (payload.data.instance) {
+            if (payload.data.mode && payload.data.mode === 'group') {
+              // group mode sends message to all those who were listening for the host to complete the session
+              io.in(payload.id).emit('consumer_webrtc_completed', { ...payload });
+            }
+          }
+        },
+      },
     },
     poll: {
       listener: {
