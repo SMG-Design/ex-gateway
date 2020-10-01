@@ -353,7 +353,7 @@ const actions = {
       users: {
         topic: false,
         compute(socket, user, { type }) {
-          const sockets = (io.sockets.adapter.rooms[type]) ? io.sockets.adapter.rooms[type].sockets : {};
+          const sockets = (io.sockets.adapter.rooms[`${user.eventId}_${type}`]) ? io.sockets.adapter.rooms[`${user.eventId}_${type}`].sockets : {};
           const userArr = {};
           if (!socket.user) {
             socket.user = JSON.stringify(user);
@@ -555,7 +555,8 @@ io.on('reconnect', async (socket) => {
     const exauthUser = await verifyUser(token);
     socket.emit('authorized', exauthUser);
     socket.join(exauthUser.id);
-    socket.join(exauthUser.user_type);
+    socket.join(`${exauthUser.eventId}_${exauthUser.user_type}`);
+    socket.join(exauthUser.eventId);
     console.log(exauthUser.user_type);
     socket.user = JSON.stringify(exauthUser);
   } catch (error) {
