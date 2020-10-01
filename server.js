@@ -576,7 +576,8 @@ io.on('connection', async (socket) => {
         await logEvent({command, success: true}, {token, user}, socket.id);
         socket.emit('authorized', user);
         socket.join(user.id);
-        socket.join(user.user_type);
+        socket.join(`${user.eventId}_${user.user_type}`);
+        socket.join(user.eventId);
         socket.user = JSON.stringify(user);
       } catch (error) {
         console.log(error);
