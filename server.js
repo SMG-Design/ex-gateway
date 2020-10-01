@@ -325,7 +325,7 @@ const actions = {
         },
         response (user, payload) {
           if (payload.data.instance && payload.data.instance.status !== 'capacity_reached') {
-            if (payload.data.configuration.mode === 'round-robin') {
+            if (payload.data.configuration && payload.data.configuration.mode === 'round-robin') {
               // each user in the list of operators needs to be notified of this
               payload.data.operators.forEach((operator) => {
                 io.to(operator).emit('client_webrtc_joined', { ...payload, user });
@@ -421,11 +421,16 @@ const actions = {
         },
         response (user, payload) {
           if (payload.data.instance) {
-            // each user in the list of contacts needs notifying
-            payload.data.participants.forEach((contact) => {
-              console.log(contact);
-              io.to(contact).emit('consumer_webrtc_incoming', { ...payload });
-            });
+            if (payload.data.configuration.mode === 'group') {
+              // group mode sends message to all those who were listening for the host to start the session
+              io.in(payload.id).emit('consumer_webrtc_activated', { ...payload });
+            } else {
+              // each user in the list of contacts needs notifying
+              payload.data.participants.forEach((contact) => {
+                console.log(contact);
+                io.to(contact).emit('consumer_webrtc_incoming', { ...payload });
+              });
+            }
           }
         },
       },
