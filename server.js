@@ -334,6 +334,17 @@ const actions = {
           }
         },
       },
+      leave: {},
+      end: {
+        response (user, payload) {
+          if (payload.data.instance) {
+            if (payload.data.mode && payload.data.mode === 'group') {
+              // group mode sends message to all those who were listening for the host to complete the session
+              io.in(payload.id).emit('consumer_webrtc_completed', { ...payload });
+            }
+          }
+        },
+      },
     },
     rtmp: {
       get: {},
@@ -353,7 +364,6 @@ const actions = {
       users: {
         topic: false,
         compute(socket, user, { type }) {
-          console.log(io.sockets.adapter.rooms);
           console.log('room', `${user.eventId}_${type}`);
           const sockets = (io.sockets.adapter.rooms[`${user.eventId}_${type}`]) ? io.sockets.adapter.rooms[`${user.eventId}_${type}`].sockets : {};
           const userArr = {};
