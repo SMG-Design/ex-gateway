@@ -353,6 +353,8 @@ const actions = {
       users: {
         topic: false,
         compute(socket, user, { type }) {
+          console.log(io.sockets.adapter.rooms);
+          console.log('room', `${user.eventId}_${type}`);
           const sockets = (io.sockets.adapter.rooms[`${user.eventId}_${type}`]) ? io.sockets.adapter.rooms[`${user.eventId}_${type}`].sockets : {};
           const userArr = {};
           if (!socket.user) {
@@ -490,13 +492,14 @@ function push(
 
 async function logEvent(eventData, authData, socketId) {
   let eventId = '';
-  if (authData.user && authData.user.eventId) {
-    eventId = authData.user.eventId;
-    delete authData.user.eventId;
+  const prepAuth = authData;
+  if (prepAuth.user && prepAuth.user.eventId) {
+    eventId = prepAuth.user.eventId;
+    prepAuth.user = (({ eventId, ...user }) => user)(prepAuth.user);
   }
   const data = {
     event: eventData,
-    auth: authData,
+    auth: prepAuth,
     socketId: socketId,
     timestamp: Date.now()
   };
@@ -574,8 +577,10 @@ io.on('connection', async (socket) => {
       try {
         const user = await verifyUser(token);
         await logEvent({command, success: true}, {token, user}, socket.id);
+        console.log(user);
         socket.emit('authorized', user);
         socket.join(user.id);
+        console.log('joining online room', `${user.eventId}_${user.user_type}`);
         socket.join(`${user.eventId}_${user.user_type}`);
         socket.join(user.eventId);
         socket.user = JSON.stringify(user);

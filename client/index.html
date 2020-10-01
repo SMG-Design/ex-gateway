@@ -539,7 +539,7 @@
           method: 'GET',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': `Basic ${clients.sublime}`
+            'Authorization': `Basic ${clients.adobe}`
           }
         });
         try {
@@ -565,7 +565,7 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': `Basic ${clients.sublime}`
+            'Authorization': `Basic ${clients.adobe}`
           },
           body: Object.keys(params).map(key => key + '=' + params[key]).join('&')
         });
