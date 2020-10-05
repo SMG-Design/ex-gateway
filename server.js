@@ -340,7 +340,7 @@ const actions = {
           if (payload.data.instance) {
             if (payload.data.mode && payload.data.mode === 'group') {
               // group mode sends message to all those who were listening for the host to complete the session
-              io.in(payload.id).emit('consumer_webrtc_completed', { ...payload });
+              io.in(payload.id).emit('consumer_webrtc_completed', payload);
             }
           }
         },
@@ -353,7 +353,11 @@ const actions = {
       activate: {},
     },
     poll: {
-      get: {},
+      get: {
+        callback (socket, { id }) {
+          socket.join(`${id}`);
+        },
+      },
       answer: {
         callback (_socket, { id, data }) {
           io.to(id).emit('consumer_poll_answer', { id, ...data });
@@ -466,7 +470,7 @@ const actions = {
           if (payload.data.instance) {
             if (payload.data.mode && payload.data.mode === 'group') {
               // group mode sends message to all those who were listening for the host to complete the session
-              io.in(payload.id).emit('consumer_webrtc_completed', { ...payload });
+              io.in(payload.id).emit('consumer_webrtc_completed', payload);
             }
           }
         },
@@ -478,7 +482,26 @@ const actions = {
           socket.join(`${id}_response`);
         },
       },
-      get: {},
+      get: {
+        callback (socket, { id }) {
+          socket.join(`${id}`);
+        },
+      },
+      add: {
+        response (user, payload) {
+          if (payload.data.mode === 'live') {
+            io.in(payload.id).emit('consumer_poll_question', {
+              id: payload.id,
+              data: {
+                id: payload.data.id,
+                question: payload.data.question,
+                order: payload.data.order,
+                answers: payload.data.answers,
+              },
+            });
+          }
+        },
+      },
     },
   },
 };

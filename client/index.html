@@ -382,8 +382,25 @@
           ]
         }
       }' /></li>
-      <li><a href="#" class="action" onclick="actionClick(this)">Poll listener - get notified for all answers for a poll</a><input type="hidden" name="action" value="client_poll_listener" /><input type="hidden" name="payload" value='{
-        "id": "cREtpfUXYiS8wdSSDELV"
+      <li><a href="#" class="action" onclick="actionClick(this)">Poll question - add a question to a poll</a><input type="hidden" name="action" value="client_poll_add" /><input type="hidden" name="payload" value='{
+        "id": "3Yn8pp2I989bqucrxR15",
+        "data": {
+          "question": "Where is Ted Souder located?",
+          "answers": [
+            {
+              "text": "New York",
+              "order": 1
+            },
+            {
+              "text": "Chicago",
+              "order": 2
+            },
+            {
+              "text": "Paris",
+              "order": 3
+            }
+          ]
+        }
       }' /></li>
     </ul>
     <h2>Consumer</h2>
@@ -510,6 +527,7 @@
     <script>
       let socket;
       const clients = {
+        starlite: 'YWJjNWFmMjEtZDcwMi00YTQwLTg1NTYtODIyZmQxNTdlYTk1OjQ5NzM5NmJhNDYxNTlkYTgyZDk2NjE5YjY4YTc4MmYxNTYyMGVhMzVkNGNmNzEyZQ==',
         sublime: 'MzcxZGZhYzMtNGY4NC00ZWY1LWE5NzktNTQ0Y2FjZTIxNjRkOjEzYTkxMjU3OWFkNjg5MGFkNGExNjNlMWY4YzVhN2Y0ZTYyOTYzNzI0ZmQ3YjFiOQ==',
         adobe: 'MTI3ZTQ0M2QtZTA2MS00ZjQwLWJiOWYtMDBlMjc1YWQ4OGMzOmI1Y2VhZTQzNDgxMDkzNmM1NGUzZTA0N2UyMTdhZWViY2U0MTcxYzBmNGM1YWVhZQ==',
         netflix: 'M2ZkMGZkZTAtMTkxOC00OGIwLThmZDctOTYwZTMxN2UzNTYzOjExMjUwYmVkYWQzY2I1ZDc2NmQ1ZjdkMjc5ZWY3YjNjYmI0YWNjN2MxNzIzOGIwZA==',
@@ -539,7 +557,7 @@
           method: 'GET',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': `Basic ${clients.adobe}`
+            'Authorization': `Basic ${clients.sublime}`
           }
         });
         try {
@@ -557,7 +575,7 @@
         const password = form.querySelector("input[name='password']").value;
         const params = {
           username,
-          password,
+          password: encodeURIComponent(password),
           eventId: '0bd12619-7f63-414c-8907-30b59aeb9380',
           grant_type: 'password'
         };
@@ -565,7 +583,7 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': `Basic ${clients.adobe}`
+            'Authorization': `Basic ${clients.sublime}`
           },
           body: Object.keys(params).map(key => key + '=' + params[key]).join('&')
         });
