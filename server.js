@@ -34,6 +34,9 @@ const itemTypeConfig = {
   webrtc: {
     topic: 'ex-collab'
   },
+  zoom: {
+    topic: 'ex-collab'
+  },
   chat: {
     topic: 'ex-discussion',
     options: {
@@ -345,6 +348,9 @@ const actions = {
           }
         },
       },
+    },
+    zoom: {
+      sign: {},
     },
     rtmp: {
       get: {},
