@@ -511,7 +511,6 @@ const actions = {
             io.in(user.id).emit('consumer_poll_question', {
               id: payload.id,
               error: 'no_mode',
-              data: payload.data,
             });
           }
         },
