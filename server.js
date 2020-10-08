@@ -495,7 +495,7 @@ const actions = {
       },
       add: {
         response (user, payload) {
-          if (payload.data.mode === 'live') {
+          if (payload.data && payload.data.mode === 'live') {
             io.in(payload.id).emit('consumer_poll_question', {
               id: payload.id,
               data: {
@@ -504,6 +504,17 @@ const actions = {
                 order: payload.data.order,
                 answers: payload.data.answers,
               },
+            });
+          } else {
+            io.in(user.id).emit('consumer_poll_question', {
+              id: payload.id,
+              error: 'no_mode',
+              data: {
+                id: payload.data.id,
+                question: payload.data.question,
+                order: payload.data.order,
+                answers: payload.data.answers,
+              }
             });
           }
         },
