@@ -496,7 +496,7 @@ const actions = {
       add: {
         response (user, payload) {
           console.log('payload for response', payload);
-          if (payload.data && payload.data.poll && payload.data.poll.mode === 'live') {
+          if (payload.data && payload.data.poll && payload.data.poll.configuration.mode === 'live') {
             io.in(payload.id).emit('consumer_poll_question', {
               id: payload.id,
               data: {
@@ -562,6 +562,7 @@ function pull(
     messageCount += 1;
     const body = message.data ? JSON.parse(Buffer.from(message.data, 'base64').toString()) : null;
     console.log(`Received message: ${message.id}`);
+    console.log(`body:`, body);
     if (!body.user) {
       // theres no user, we reject it but pull from the queue as nobody should have it
       console.log('no user', `${body.domain}_${body.action}_${body.command}`);
