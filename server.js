@@ -456,6 +456,7 @@ const actions = {
           }
         },
       },
+      assign: {},
       activate: {
         callback (socket, { id, data }) {
           if (data.instance) {
