@@ -408,7 +408,7 @@ const actions = {
             socket.to(`${user.eventId}`).emit(`consumer_online_join`, {
               type: user.user_type,
               id: user.id,
-              user,
+              user: (({ email, ...user }) => user)(user),
             });
           } else {
             socket.to(`${user.eventId}`).emit(`consumer_online_leave`, {
@@ -642,7 +642,7 @@ io.on('reconnect', async (socket) => {
     socket.to(`${exauthUser.eventId}`).emit(`consumer_online_join`, {
       type: exauthUser.user_type,
       id: exauthUser.id,
-      user: exauthUser,
+      user: (({ email, ...user }) => user)(exauthUser),
     });
   } catch (error) {
     console.log(error);
@@ -669,7 +669,7 @@ io.on('connection', async (socket) => {
         socket.to(`${user.eventId}`).emit(`consumer_online_join`, {
           type: user.user_type,
           id: user.id,
-          user,
+          user: (({ email, ...user }) => user)(user),
         });
       } catch (error) {
         console.log(error);
