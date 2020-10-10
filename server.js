@@ -388,12 +388,22 @@ const actions = {
           for (let socketId in sockets) {
             if (sockets[socketId] === true && io.sockets.connected[socketId] && io.sockets.connected[socketId].user) {
               const userObj = JSON.parse(io.sockets.connected[socketId].user);
-              if (!userArr[userObj.id]) {
+              if (!userArr[userObj.id] && userObj.visible) {
                 userArr[userObj.id] = (({ email, ...user }) => user)(userObj);
               }
             }
           }
           return userArr;
+        },
+      },
+      visibility: {
+        topic: false,
+        compute(socket, user, { visibility }) {
+          if (socket.user) {
+            user = JSON.parse(socket.user);
+          }
+          user.visible = visibility;
+          socket.user = JSON.stringify(user);
         },
       },
     },
