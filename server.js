@@ -378,22 +378,43 @@ const actions = {
       users: {
         topic: false,
         compute(socket, user, { type }) {
-          console.log('room', `${user.eventId}_${type}`);
-          const sockets = (io.sockets.adapter.rooms[`${user.eventId}_${type}`]) ? io.sockets.adapter.rooms[`${user.eventId}_${type}`].sockets : {};
-          const userArr = {};
-          if (!socket.user) {
-            socket.user = JSON.stringify(user);
-            console.log('setting socket user', socket);
-          }
-          for (let socketId in sockets) {
-            if (sockets[socketId] === true && io.sockets.connected[socketId] && io.sockets.connected[socketId].user) {
-              const userObj = JSON.parse(io.sockets.connected[socketId].user);
-              if (!userArr[userObj.id] && userObj.visible) {
-                userArr[userObj.id] = (({ email, ...user }) => user)(userObj);
-              }
+          return new Promise((resolve, reject) => {
+            console.log('room', `${user.eventId}_${type}`);
+            // const sockets = (io.sockets.adapter.rooms[`${user.eventId}_${type}`]) ? io.sockets.adapter.rooms[`${user.eventId}_${type}`].sockets : {};
+            if (!socket.user) {
+              socket.user = JSON.stringify(user);
+              console.log('setting socket user', socket.adapter.rooms);
             }
-          }
-          return userArr;
+            io.in(`${user.eventId}_${type}`).clients((err, sockets) => {
+              const userArr = {};
+              console.log(sockets);
+              for (let i = 0; i < sockets.length; i++) {
+                const socketId = sockets[i];
+                if (io.of('/').connected[socketId] && io.of('/').connected[socketId].user) {
+                  const userObj = JSON.parse(io.of('/').connected[socketId].user);
+                  console.log(userObj);
+                  if (!userArr[userObj.id] && userObj.visible) {
+                    userArr[userObj.id] = (({ email, ...user }) => user)(userObj);
+                  }
+                }
+              };
+              resolve(userArr);
+            });
+          });
+          // const userArr = {};
+          // if (!socket.user) {
+          //   socket.user = JSON.stringify(user);
+          //   console.log('setting socket user', socket);
+          // }
+          // for (let socketId in sockets) {
+          //   if (sockets[socketId] === true && io.sockets.connected[socketId] && io.sockets.connected[socketId].user) {
+          //     const userObj = JSON.parse(io.sockets.connected[socketId].user);
+          //     if (!userArr[userObj.id] && userObj.visible) {
+          //       userArr[userObj.id] = (({ email, ...user }) => user)(userObj);
+          //     }
+          //   }
+          // }
+          // return userArr;
         },
       },
       visibility: {
@@ -638,6 +659,7 @@ io.on('reconnect', async (socket) => {
     socket.join(`${exauthUser.eventId}_${exauthUser.user_type}`);
     socket.join(exauthUser.eventId);
     console.log(exauthUser.user_type);
+    exauthUser.visible = true;
     socket.user = JSON.stringify(exauthUser);
     socket.to(`${exauthUser.eventId}`).emit(`consumer_online_join`, {
       type: exauthUser.user_type,
@@ -659,12 +681,14 @@ io.on('connection', async (socket) => {
       try {
         const user = await verifyUser(token);
         await logEvent({command, success: true}, {token, user}, socket.id);
-        console.log(user);
+        // console.log(user);
         socket.emit('authorized', user);
         socket.join(user.id);
         console.log('joining online room', `${user.eventId}_${user.user_type}`);
         socket.join(`${user.eventId}_${user.user_type}`);
         socket.join(user.eventId);
+        // default visibility for the logging in user
+        user.visible = true;        
         socket.user = JSON.stringify(user);
         socket.to(`${user.eventId}`).emit(`consumer_online_join`, {
           type: user.user_type,
@@ -741,7 +765,7 @@ io.on('connection', async (socket) => {
               console.log(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
               socket.emit(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
             } else {
-              socket.emit(`${domain}_${action}_${command}`, { status: 200, payload: commandProps.compute(socket, user, payload) });
+              socket.emit(`${domain}_${action}_${command}`, { status: 200, payload: await commandProps.compute(socket, user, payload) });
             }
             await logEvent({domain, action, command, topic, success: true}, {token, user: exAuthUser}, socket.id);
           } catch (error) {
