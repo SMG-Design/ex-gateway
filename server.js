@@ -253,7 +253,7 @@ const actions = {
       },
       activate: {
         callback (socket, { id, data }) {
-          if (data.instance) {
+          if (data && data.instance) {
             socket.join(data.instance);
           }
         },
