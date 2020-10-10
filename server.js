@@ -404,6 +404,17 @@ const actions = {
           }
           user.visible = visibility;
           socket.user = JSON.stringify(user);
+          if (user.visible) {
+            socket.to(`${user.eventId}`).emit(`consumer_online_join`, {
+              type: user.user_type,
+              id: user.id,
+            });
+          } else {
+            socket.to(`${user.eventId}`).emit(`consumer_online_join`, {
+              type: user.user_type,
+              id: user.id,
+            });
+          }
         },
       },
     },
@@ -627,6 +638,10 @@ io.on('reconnect', async (socket) => {
     socket.join(exauthUser.eventId);
     console.log(exauthUser.user_type);
     socket.user = JSON.stringify(exauthUser);
+    socket.to(`${exauthUser.eventId}`).emit(`consumer_online_join`, {
+      type: exauthUser.user_type,
+      id: exauthUser.id,
+    });
   } catch (error) {
     console.log(error);
     socket.emit('unauthorized', { error: error.message });
@@ -649,6 +664,10 @@ io.on('connection', async (socket) => {
         socket.join(`${user.eventId}_${user.user_type}`);
         socket.join(user.eventId);
         socket.user = JSON.stringify(user);
+        socket.to(`${user.eventId}`).emit(`consumer_online_join`, {
+          type: user.user_type,
+          id: user.id,
+        });
       } catch (error) {
         console.log(error);
         await logEvent({command, success: false}, {token}, socket.id);
