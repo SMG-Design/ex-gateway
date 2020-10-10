@@ -366,8 +366,12 @@ const actions = {
       },
       answer: {
         callback (_socket, { id, data }) {
-          io.to(id).emit('consumer_poll_answer', { id, ...data });
-        }
+          // io.to(id).emit('consumer_poll_answer', { id, ...data });
+          io.to(`${id}_response`).emit('client_poll_answer', { id, ...data });
+        },
+        response (user, payload) {
+          io.to(`${payload.id}`).emit(`consumer_poll_answer`, { payload });
+        },
       }
     },
     online: {
@@ -486,14 +490,15 @@ const actions = {
       },
     },
     poll: {
-      listener: {
-        callback (socket, { id }) {
-          socket.join(`${id}_response`);
-        },
-      },
+      // listener: {
+      //   callback (socket, { id }) {
+      //     socket.join(`${id}_response`);
+      //   },
+      // },
       get: {
         callback (socket, { id }) {
           socket.join(`${id}`);
+          socket.join(`${id}_response`);
         },
       },
       add: {
