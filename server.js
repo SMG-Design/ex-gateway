@@ -410,7 +410,7 @@ const actions = {
               id: user.id,
             });
           } else {
-            socket.to(`${user.eventId}`).emit(`consumer_online_join`, {
+            socket.to(`${user.eventId}`).emit(`consumer_online_leave`, {
               type: user.user_type,
               id: user.id,
             });
@@ -672,6 +672,21 @@ io.on('connection', async (socket) => {
         console.log(error);
         await logEvent({command, success: false}, {token}, socket.id);
         socket.emit('unauthorized', { error: error.message });
+      }
+    }
+  });
+
+  socket.on('disconnect', (reason) => {
+    if (reason === 'io server disconnect') {
+      // the disconnection was initiated by the server, you need to reconnect manually
+      socket.connect();
+    } else {
+      if (socket.user) {
+        const user = JSON.parse(socket.user);
+        socket.to(`${user.eventId}`).emit(`consumer_online_leave`, {
+          type: user.user_type,
+          id: user.id,
+        });
       }
     }
   });
