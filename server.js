@@ -365,9 +365,8 @@ const actions = {
         },
       },
       answer: {
-        callback (_socket, { id, data }) {
-          // io.to(id).emit('consumer_poll_answer', { id, ...data });
-          io.to(`${id}_response`).emit('client_poll_answer', { id, ...data });
+        callback (_socket, { id, data }, user) {
+          io.to(`${id}_response`).emit('client_poll_answer', { id, data, user });
         },
         response (user, payload) {
           io.to(`${payload.id}`).emit(`consumer_poll_answer`, { payload });
@@ -812,7 +811,7 @@ io.on('connection', async (socket) => {
               payload = commandProps.prepare(user, payload);
             }
             if (commandProps.callback) {
-              commandProps.callback(socket, payload);
+              commandProps.callback(socket, payload, user);
             }
             if (topic !== false) {
               const messageId = await push(topic, { domain, action, command, payload, user, socketId: socket.id }, user.eventId);
