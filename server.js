@@ -405,7 +405,10 @@ const actions = {
                     }
                   });
                 }
-                resolve(userArr);
+                resolve({
+                  type,
+                  users: userArr,
+                });
               });
             });
           });
