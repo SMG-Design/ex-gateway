@@ -582,6 +582,14 @@ const actions = {
         },
       },
     },
+    user: {
+      topic: false,
+      get: {
+        compute(socket, user, { id }) {
+          return getUser(user.token, id);
+        },
+      }
+    },
   },
 };
 
@@ -666,6 +674,19 @@ const verifyUser = async (token) => {
   return resp.data;
 };
 
+const getUser = async (token, id) => {
+  const config = {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  };
+  const resp = await axios.get(`${exauthURL}/auth/user/${id}`, config);
+  if (resp.status !== 200) {
+    throw new Error('not logged in');
+  }
+  return resp.data;
+};
+
 io.of('/').adapter.customHook = (sockets, cb) => {
   const userArr = {};
   for (let i = 0; i < sockets.length; i++) {
@@ -686,6 +707,7 @@ io.of('/').adapter.customHook = (sockets, cb) => {
 
 io.on('reconnect', async (socket) => {
   try {
+    const token = socket.request._query['x-auth'];
     const exauthUser = await verifyUser(token);
     socket.emit('authorized', exauthUser);
     socket.join(exauthUser.id);
