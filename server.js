@@ -379,12 +379,14 @@ const actions = {
         topic: false,
         compute(socket, user, { type }) {
           return new Promise((resolve, reject) => {
-            console.log('room', `${user.eventId}_${type}`);
             // const sockets = (io.sockets.adapter.rooms[`${user.eventId}_${type}`]) ? io.sockets.adapter.rooms[`${user.eventId}_${type}`].sockets : {};
             if (!socket.user) {
               socket.user = JSON.stringify(user);
             }
-            io.of('/').adapter.clients([`${user.eventId}_${type}`], (err, sockets) => {
+            console.log(type);
+            const room = (type) ? `${user.eventId}_${type}` : `${user.eventId}`;
+            console.log('room', room);
+            io.of('/').adapter.clients([room], (err, sockets) => {
               const userArr = {};
               if (err) {
                 console.log('error getting client ids', err);
@@ -432,6 +434,7 @@ const actions = {
       visibility: {
         topic: false,
         compute(socket, user, { visibility }) {
+          console.log('visibility', visibility);
           if (socket.user) {
             user = JSON.parse(socket.user);
           }
@@ -668,7 +671,6 @@ io.of('/').adapter.customHook = (sockets, cb) => {
   for (let i = 0; i < sockets.length; i++) {
     const socketId = sockets[i];
     console.log('does the socket exist?', !!io.of('/').connected[socketId]);
-    console.log('does the user exist on the socket?', !!io.of('/').connected[socketId].user); 
     if (io.of('/').connected[socketId] && io.of('/').connected[socketId].user) {
       const userObj = JSON.parse(io.of('/').connected[socketId].user);
       console.log('user object', userObj);
