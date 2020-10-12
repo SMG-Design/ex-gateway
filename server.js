@@ -824,7 +824,7 @@ io.on('connection', async (socket) => {
             } else {
               socket.emit(`${domain}_${action}_${command}`, { status: 200, payload: await commandProps.compute(socket, user, payload) });
             }
-            await logEvent({domain, action, command, topic, success: true}, {token, user: exAuthUser}, socket.id);
+            await logEvent({domain, action, command, payload, topic, success: true}, {token, user: exAuthUser}, socket.id);
           } catch (error) {
             console.error(error);
             await push('ex-monitoring', {event: {domain, action, command, topic, success: false}, auth: {token}, socketId: socket.id, timestamp: Date.now()}, null, 'ex-gateway');
