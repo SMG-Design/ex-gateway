@@ -325,7 +325,7 @@ const actions = {
           if (payload.data.mode && payload.data.mode === 'round-robin') {
             // each user in the list of operators needs to be notified of this changed status
             payload.data.operators.forEach((operator) => {
-              io.to(operator).emit('client_webrtc_callback', { ...payload, user });
+              io.to(operator).emit('client_webrtc_callback', { payload, user });
             });
           }
         },
