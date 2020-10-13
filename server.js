@@ -537,14 +537,13 @@ const actions = {
           socket.join(data.instance);
         },
         response (user, payload) {
+          console.log('response', payload);
           if (payload.data.id) {
-            if (payload.data.participants) {
               // each user in the list of contacts needs notifying
               payload.data.participants.forEach((contact) => {
                 console.log(contact);
                 io.to(contact).emit('consumer_webrtc_incoming', { ...payload });
               });
-            }
           }
         },
       },
