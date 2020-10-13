@@ -532,6 +532,7 @@ const actions = {
           }
         },
       },
+      callback: {},
       assign: {},
       activate: {
         callback (socket, { id, data }) {
