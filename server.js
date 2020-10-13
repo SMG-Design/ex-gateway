@@ -522,7 +522,7 @@ const actions = {
             if (payload.data.mode && payload.data.mode === 'group') {
               // group mode sends message to all those who were listening for the host to start the session
               io.in(payload.id).emit('consumer_webrtc_activated', { ...payload });
-            } else {
+            } else if (payload.data.participants) {
               // each user in the list of contacts needs notifying
               payload.data.participants.forEach((contact) => {
                 console.log(contact);
