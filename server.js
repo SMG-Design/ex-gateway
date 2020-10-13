@@ -532,6 +532,22 @@ const actions = {
           }
         },
       },
+      recall: {
+        callback(socket, { id, data }) {
+          socket.join(data.instance);
+        },
+        response (user, payload) {
+          if (payload.data.instance) {
+            if (payload.data.participants) {
+              // each user in the list of contacts needs notifying
+              payload.data.participants.forEach((contact) => {
+                console.log(contact);
+                io.to(contact).emit('consumer_webrtc_incoming', { ...payload });
+              });
+            }
+          }
+        },
+      },
       callback: {},
       assign: {},
       activate: {
