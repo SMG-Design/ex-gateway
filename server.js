@@ -539,11 +539,16 @@ const actions = {
         response (user, payload) {
           console.log('response', payload);
           if (payload.data.id) {
+            if (payload.operators) {
+                payload.operators.forEach((operator) => {
+                  io.to(operator).emit('client_webrtc_returned', { ...payload });
+                });
+              }
               // each user in the list of contacts needs notifying
               payload.data.participants.forEach((contact) => {
-                console.log(contact);
-                io.to(contact).emit('consumer_webrtc_incoming', { ...payload });
+                io.to(contact.id).emit('consumer_webrtc_incoming', { id: payload.id, data: payload.data, user });
               });
+              
           }
           
         },
