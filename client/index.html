@@ -408,6 +408,12 @@
           ]
         }
       }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Send notice</a><input type="hidden" name="action" value="client_notice_send" /><input type="hidden" name="payload" value='{
+        "event": "0bd12619-7f63-414c-8907-30b59aeb9380",
+        "message": {
+          "text": "A new message"
+        }
+      }' /></li>
     </ul>
     <h2>Consumer</h2>
     <ul>
@@ -523,6 +529,12 @@
       }' /></li>
       <li><a href="#" class="action" onclick="actionClick(this)">Online Crew</a><input type="hidden" name="action" value="consumer_online_users" /><input type="hidden" name="payload" value='{
         "type": "crew"
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Get unread notices</a><input type="hidden" name="action" value="consumer_notice_get" /><input type="hidden" name="payload" value='{
+        "event": "0bd12619-7f63-414c-8907-30b59aeb9380"
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Mark notice as read</a><input type="hidden" name="action" value="consumer_notice_read" /><input type="hidden" name="payload" value='{
+        "message": "uuid"
       }' /></li>
     </ul>
     <h3>Action: <span id="action" /></h3>

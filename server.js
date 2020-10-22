@@ -467,6 +467,10 @@ const actions = {
         },
       },
     },
+    notice: {
+      get: {},
+      read: {},
+    },
   },
   client: {
     rtmp: {
@@ -623,6 +627,19 @@ const actions = {
           return getUser(user.token, id);
         },
       }
+    },
+    notice: {
+      send: {
+        prepare (user, payload) {
+          payload.sent = new Date();
+          payload.public_id = uuidv4();
+          return payload;
+        },
+        callback (socket, data) {
+          console.log('client_notice_send', data);
+          io.to(data.event).emit('consumer_notice_receive', { ...data });
+        },
+      },
     },
   },
 };
