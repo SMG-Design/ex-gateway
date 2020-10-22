@@ -277,7 +277,11 @@ const actions = {
       },
       remove: {
         callback (socket, { id, data }) {
-          io.to(id).emit('consumer_chat_remove', { id, ...data });
+          if (data.instance) {
+            io.to(data.instance).emit('consumer_chat_remove', { id, ...data });
+          } else {
+            io.to(id).emit('consumer_chat_remove', { id, ...data });
+          }
         },
       },
     },
