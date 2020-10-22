@@ -284,6 +284,29 @@ const actions = {
           }
         },
       },
+      leave: {
+        callback (socket, { id, data }) {
+          if (data.instance) {
+            io.to(data.instance).emit('consumer_chat_leave', { id, ...data });
+            socket.leave(data.instance);
+          } else {
+            io.to(id).emit('consumer_chat_leave', { id, ...data });
+            socket.leave(id);
+          }
+        },
+      },
+      add: {
+        callback (user, payload) {
+          if (payload.data.instance) {
+            if (payload.data.participants) {
+              // each user in the list of participants needs to be notified that they've been added
+              payload.data.participants.forEach((participant) => {
+                io.to(participant).emit('consumer_chat_incoming', { ...payload });
+              });
+            }
+          }
+        },
+      }
     },
     webrtc: {
       read: {},
