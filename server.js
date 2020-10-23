@@ -285,18 +285,18 @@ const actions = {
         },
       },
       leave: {
-        callback (socket, { id, data }) {
+        callback (socket, { id, data }, user) {
           if (data.instance) {
-            io.to(data.instance).emit('consumer_chat_leave', { id, ...data });
+            io.to(data.instance).emit('consumer_chat_leave', { id, ...data, user });
             socket.leave(data.instance);
           } else {
-            io.to(id).emit('consumer_chat_leave', { id, ...data });
+            io.to(id).emit('consumer_chat_leave', { id, ...data, user });
             socket.leave(id);
           }
         },
       },
       add: {
-        callback (user, payload) {
+        callback (socket, payload) {
           if (payload.data.instance) {
             if (payload.data.participants) {
               // each user in the list of participants needs to be notified that they've been added
