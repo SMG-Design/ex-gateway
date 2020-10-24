@@ -639,7 +639,7 @@ const actions = {
                 id: payload.data.id,
                 order: payload.data.question.order,
                 question: payload.data.question.question,
-                answers: Object.fromEntries(payload.data.question.answers.map((v) => [v.id, v])),
+                answers: Object.fromEntries(payload.data.answers.map((v) => [v.id, v])),
                 responses: {},
               },
             });
