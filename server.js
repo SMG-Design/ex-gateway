@@ -637,9 +637,10 @@ const actions = {
               data: {
                 poll: payload.data.poll,
                 id: payload.data.id,
-                question: payload.data.question,
-                order: payload.data.order,
-                answers: payload.data.answers,
+                order: payload.data.question.order,
+                question: payload.data.question.question,
+                answers: Object.fromEntries(payload.data.question.answers.map((v) => [v.id, v])),
+                responses: {},
               },
             });
           } else {
