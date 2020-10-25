@@ -296,7 +296,7 @@ const actions = {
         },
       },
       add: {
-        callback (socket, payload) {
+        response (user, payload) {
           if (payload.data.instance) {
             if (payload.data.participants) {
               // each user in the list of participants needs to be notified that they've been added
