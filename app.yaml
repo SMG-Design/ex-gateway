@@ -10,3 +10,6 @@ env_variables:
   EXGATEWAYCACHEIP: $EXGATEWAYCACHEIP
   EXGATEWAYCACHEPORT: $EXGATEWAYCACHEPORT
   SOURCE: app-engine
+
+automatic_scaling:
+  min_num_instances: 4
