@@ -160,7 +160,11 @@ const actions = {
           end_date: ['datetime', 'optional'],
           event: ['uuid', 'optional'],
           landing_page: ['uuid', 'optional']
-        }
+        },
+        response (user, payload) {
+          console.log('admin_itinerary_update_notification', payload.event);
+          io.to(payload.event).emit('consumer_itinerary_update', { ...payload });
+        },
       },
       read: {
         topic: 'ex-manage',
