@@ -267,13 +267,22 @@ const actions = {
           payload.data.sent = new Date();
           payload.data.from = user;
           payload.data.uuid = uuidv4();
-          console.log('preparing send', payload);
           return payload;
         },
-        callback (socket, { id, data }) {
-          console.log('consumer_chat_receive', data);
+        callback (socket, { id, data }, user) {
           if (data.instance) {
             io.to(data.instance).emit('consumer_chat_receive', { id, ...data });
+          } else if (data.moderators) {
+            data.moderators.forEach((moderator) => {
+              io.to(moderator).emit('consumer_chat_receive', { id, ...data });
+            });
+            // user needs to see their own messages
+            if (!data.moderators.includes(user.id)) {
+              socket.emit('consumer_chat_receive', { id, ...data });
+            } else if (data.requester) {
+              // this is a reply to the sender
+              io.to(data.requester.id).emit('consumer_chat_receive', { id, ...data });
+            }
           } else {
             io.to(id).emit('consumer_chat_receive', { id, ...data });
           }
@@ -520,6 +529,11 @@ const actions = {
           } else {
             io.to(id).emit('consumer_chat_remove', { id, ...data });
           }
+        },
+      },
+      publish: {
+        callback (socket, { id, data }) {
+          io.to(id).emit('consumer_chat_receive', { id, ...data });
         },
       },
       get: {},
