@@ -282,7 +282,7 @@ const actions = {
             } else if (data.requester) {
               // this is a reply to the sender
               io.to(data.requester.id).emit('consumer_chat_receive', { id, ...data });
-            } else if (!data.parent && data.moderators.includes(user.id) || data.private === false) {
+            } else if ((!data.parent && data.moderators.includes(user.id)) || data.private === false) {
               // send to all as its a global message from the moderators or public
               io.to(id).emit('consumer_chat_receive', { id, ...data });
             }
