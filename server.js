@@ -40,7 +40,7 @@ const itemTypeConfig = {
   chat: {
     topic: 'ex-discussion',
     options: {
-      moderation: ['enum', 'required', ['trust', 'post-moderate', 'pre-approve']],
+      moderation: ['enum', 'required', ['trust', 'post-moderate', 'pre-moderate']],
       moderators: ['array', 'optional'],
       threads: ['boolean', 'optional'],
       private: ['boolean', 'optional'],
@@ -51,7 +51,7 @@ const itemTypeConfig = {
   forum: {
     topic: 'ex-discussion',
     options: {
-      moderation: ['enum', 'required', ['trust', 'post-moderate', 'pre-approve']],
+      moderation: ['enum', 'required', ['trust', 'post-moderate', 'pre-moderate']],
       moderators: ['array', 'optional'],
       threads: ['boolean', 'optional'],
       private: ['boolean', 'optional']
@@ -273,10 +273,8 @@ const actions = {
           if (data.instance) {
             io.to(data.instance).emit('consumer_chat_receive', { id, ...data });
           } else if (data.moderators) {
-            data.moderators.forEach((moderator) => {
-              io.to(moderator).emit('consumer_chat_receive', { id, ...data });
-            });
             // user needs to see their own messages
+            let sentAll = false;
             if (!data.moderators.includes(user.id)) {
               socket.emit('consumer_chat_receive', { id, ...data });
             } else if (data.requester) {
@@ -285,6 +283,12 @@ const actions = {
             } else if ((!data.parent && data.moderators.includes(user.id)) || data.private === false) {
               // send to all as its a global message from the moderators or public
               io.to(id).emit('consumer_chat_receive', { id, ...data });
+              sentAll = true;
+            }
+            if (!sentAll) {
+              data.moderators.forEach((moderator) => {
+                io.to(moderator).emit('consumer_chat_receive', { id, ...data });
+              });
             }
           } else {
             io.to(id).emit('consumer_chat_receive', { id, ...data });
