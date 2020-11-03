@@ -837,7 +837,7 @@ io.on('reconnect', async (socket) => {
 
 io.on('connection', async (socket) => {
   // AUTHORIZE
-  socket.on('authorize', async ({ method, token }) => {
+  socket.on('authorize', async ({ method, token, visibility }) => {
     if (method === 'oauth2') {
       const command = 'authorize';
       // need to do actual logic to verify the user here
@@ -851,7 +851,7 @@ io.on('connection', async (socket) => {
         socket.join(`${user.eventId}_${user.user_type}`);
         socket.join(user.eventId);
         // default visibility for the logging in user
-        user.visible = true;        
+        user.visible = visibility || true;
         socket.user = JSON.stringify(user);
         socket.to(`${user.eventId}`).emit(`consumer_online_join`, {
           type: user.user_type,
