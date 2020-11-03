@@ -853,11 +853,13 @@ io.on('connection', async (socket) => {
         // default visibility for the logging in user
         user.visible = visibility || true;
         socket.user = JSON.stringify(user);
-        socket.to(`${user.eventId}`).emit(`consumer_online_join`, {
-          type: user.user_type,
-          id: user.id,
-          user: (({ email, ...user }) => user)(user),
-        });
+        if (user.visible) {
+          socket.to(`${user.eventId}`).emit(`consumer_online_join`, {
+            type: user.user_type,
+            id: user.id,
+            user: (({ email, ...user }) => user)(user),
+          });
+        }
       } catch (error) {
         console.log(error);
         await logEvent({command, success: false}, {token}, socket.id);
