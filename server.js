@@ -277,15 +277,16 @@ const actions = {
             let sentAll = false;
             if (!data.moderators.includes(user.id)) {
               socket.emit('consumer_chat_receive', { id, ...data });
-            } else if (data.requester) {
-              // this is a reply to the sender
-              io.to(data.requester.id).emit('consumer_chat_receive', { id, ...data });
             } else if ((!data.parent && data.moderators.includes(user.id)) || (data.private === false || data.private === 'false')) {
-              // send to all as its a global message from the moderators or public
+              // send to all as its a global message from the moderators or public parent message
               io.to(id).emit('consumer_chat_receive', { id, ...data });
               sentAll = true;
             }
             if (!sentAll) {
+              if (data.requester) {
+                // this is a reply to the sender
+                io.to(data.requester.id).emit('consumer_chat_receive', { id, ...data });
+              }
               data.moderators.forEach((moderator) => {
                 io.to(moderator).emit('consumer_chat_receive', { id, ...data });
               });
