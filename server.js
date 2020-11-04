@@ -279,6 +279,9 @@ const actions = {
               socket.emit('consumer_chat_receive', { id, ...data });
             } else if ((!data.parent && data.moderators.includes(user.id)) || (data.private === false || data.private === 'false')) {
               // send to all as its a global message from the moderators or public parent message
+              if (data.parent) {
+                io.to(id).emit('consumer_chat_receive', { id, ...data.parent_message });
+              }
               io.to(id).emit('consumer_chat_receive', { id, ...data });
               sentAll = true;
             }
