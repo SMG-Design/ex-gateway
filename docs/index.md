@@ -2,7 +2,7 @@
 
 Websocket based Gateway for all activities. This includes Admin CRUD, Client Management Portal and Consumer Applications.
 
-This gateway is intended to be consumed by our JavaScript Browser SDK, Wordpress Plugin and Node.JS SDK.
+This gateway is intended to be consumed by our JavaScript Browser SDK, Wordpress Plugin and Node.JS SDK. But will work with standard socket libraries.
 
 ## Extream handles groupings with the following separation
 
@@ -11,7 +11,7 @@ This gateway is intended to be consumed by our JavaScript Browser SDK, Wordpress
 1. User Group - a user group belongs to an organisation
 1. User Permissions - permissions are applied to a user group
 1. User - a user belongs to many groups, across multiple organisations
-1. Itinerary - an itinerary has a start and end date/time and is the home of multiple itinerary items
+1. Itinerary - an itinerary has a start and end date/time, has a parent/child hierarchy and is the home of multiple itinerary items
 1. Itinerary Item - an itinerary item has a start and end date/time and belongs to an itinerary
 
 ## Itinerary Item Types
@@ -29,16 +29,41 @@ We support the following types of itinerary items
 
 ### Security
 
-The socket connection is authenticated using an oauth2 authorization code. This can be obtained from https://api.extream.app/auth/oauth2/authorize
+To authenticate a user, first a login request must be made to https://auth.extream.app/auth/login. This will return an access token.
 
-Set the `userToken` based on the users localStorage or the oauth2 authorization code if null. Get the users status and display a login form if required.
+All non-authenticated requests must contain a basic authorization header using the value of the client token.
 
-In the meta of a response to any command, you will have information whether the command requires login. If no login is required, the oauth2 authorization code will be enough.
+Users are tied to an event ID. To authenticate a user, the event ID must be provided in the payload. You can retrieve event IDs from the admin area.
+
+To authenticate a user, `POST` the following  urlencoded payload to `https://auth.extream.app/auth/login.
+
+```x-www-form-urlencoded
+grant_type=password
+username={username}
+password={password}
+eventId={eventId}
+```
+
+Response expected payload:
+
+```JSON
+{
+    "accessToken": "1461072f9a5fc20ff054ab71299d8d88645c44b6",
+    "accessTokenExpiresAt": "2020-11-16T00:40:43.464Z",
+    "refreshToken": "3c60db2a1255553942edd7dd023fe90994fa4740",
+    "refreshTokenExpiresAt": "2020-11-17T00:40:43.464Z",
+    "id": "8c3b38a3-e394-42dc-9c7e-5a741f238061"
+}
+```
+
+Once authenticated, a socket connection can be established. The connection is verified using the access token from authenticating.
+
+Set the `userToken` based on the users localStorage ex-authentication value.
 
 An example authenticated process assuming using socket.io:
 ```javascript
-const userToken = localStorage.getItem('ex-authentication') || `YOUR_ACCESS_TOKEN`;
-const socket = io('https://gateway.extream.app', {
+const userToken = localStorage.getItem('ex-authentication');
+const socket = io(`https://gateway.extream.app?x-auth=${userToken}`, {
   transports: ['websocket']
 });
 // Socket connected
@@ -49,7 +74,7 @@ socket.on('disconnect', onDisconnect);
 socket.on('authenticated', onAuthenticated);
 function onConnect() {
   console.log('Successfully connected to the ex-gateway');
-  socket.emit('authenticate', { method: 'oauth2', token: userToken });
+  socket.emit('authorize', { method: 'oauth2', token: userToken });
 }
 function onDisconnect() {
   console.log('Disconnected from ex-gateway');
@@ -61,15 +86,11 @@ function onAuthenticated(data) {
     authStatus
   } = data;
   console.log(`Successfully connected to organisation ${organisationId} and current users status is: ${authStatus}`);
-  if (authStatus === 'unauthorized') {
-    // Show user login process and request username and password. Trigger the 'login' event on form submission. We support Multi-Factor Auth.
-  }
 }
 function doLogin({ username, password }) {
   socket.on('mfa', onMFA);
   socket.on('authorized', onAuthorized);
   socket.on('unauthorized', onUnauthorized);
-  socket.emit('login', { username, password });
 }
 function doMFA(code) {
   // emitting mfa will return either authorized or unauthorized, as setup during doLogin.
