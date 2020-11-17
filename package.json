@@ -1,6 +1,6 @@
 {
   "name": "exgateway",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Websocket based Gateway for all activities. This includes Admin CRUD, Client Management Portal and Consumer Applications.",
   "main": "server.js",
   "engines": {
