@@ -11,6 +11,7 @@ const io = require('socket.io')(process.env.PORT || 8880, {
 });
 const redis = require('socket.io-redis');
 const axios = require('axios');
+const xkpasswd = require('xkpasswd');
 const exauthURL = process.env.EXAUTH;
 io.adapter(redis({ host: process.env.EXGATEWAYCACHEIP, port: process.env.EXGATEWAYCACHEPORT }));
 
@@ -522,6 +523,10 @@ const actions = {
       get: {},
       read: {},
     },
+    notification: {
+      send: {},
+      update: {},
+    },
   },
   client: {
     rtmp: {
@@ -575,7 +580,15 @@ const actions = {
           }
           payload.data.sent = new Date();
           payload.data.from = user;
-          payload.data.instance = uuidv4();
+          if (payload.data.generator && payload.data.generator === 'memorable') {
+            payload.data.instance = xkpasswd({complexity: 2, separators: '-'})
+          } else {
+            payload.data.instance = uuidv4();
+          }
+          if (payload.data.emails) {
+            // no participants so send an empty array and allow notification service to handle it
+            payload.data.participants = [];
+          }
           return payload;
         },
         callback(socket, { id, data }) {
@@ -586,10 +599,28 @@ const actions = {
             if (payload.data.mode && payload.data.mode === 'group') {
               // group mode sends message to all those who were listening for the host to start the session
               io.in(payload.id).emit('consumer_webrtc_activated', { ...payload });
+            } else if (payload.data.emails) {
+              push('ex-notification', {
+                method: 'email',
+                recipients: payload.data.emails,
+                template: 'webrtc-invite',
+                payload: {
+                  content: {
+                    title: payload.data.title,
+                    link: `${payload.data.baseURL}/${payload.data.instance}`,
+                    from: `${user.firstName} ${user.lastName}`,
+                  },
+                  itemId: payload.id,
+                  instanceId: payload.data.instance,
+                  itemType: 'webrtc',
+                  onComplete: 'addParticipant',
+                  register: payload.data.register,
+                },
+                user,
+              });
             } else if (payload.data.participants) {
               // each user in the list of contacts needs notifying
               payload.data.participants.forEach((contact) => {
-                console.log(contact);
                 io.to(contact).emit('consumer_webrtc_incoming', { ...payload });
               });
             }
@@ -713,6 +744,7 @@ function push(
 ) {
   data.source = source;
   data.eventId = eventId;
+  console.log(JSON.stringify(data));
   async function publishMessage() {
     const dataBuffer = Buffer.from(JSON.stringify(data));
 

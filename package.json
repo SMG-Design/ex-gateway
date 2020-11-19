@@ -30,7 +30,8 @@
     "grpc": "^1.24.3",
     "socket.io": "^2.3.0",
     "socket.io-redis": "^5.3.0",
-    "uuid": "^8.3.0"
+    "uuid": "^8.3.0",
+    "xkpasswd": "^1.0.5"
   },
   "devDependencies": {
     "dotenv": "^8.2.0"

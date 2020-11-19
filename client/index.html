@@ -250,6 +250,17 @@
           "max_participants": 6
         }
       }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Create itinerary item (video chat with registration and invitation)</a><input type="hidden" name="action" value="admin_item_create" /><input type="hidden" name="payload" value='{
+        "title": "Ad-hoc session",
+        "start_date": "2020-09-18 08:00:00",
+        "end_date": "2020-09-18 09:00:00",
+        "itinerary": "a6a94e7c-0ec4-4fec-994a-c49a327e8034",
+        "type": "webrtc",
+        "configuration": {
+          "mode": "instant",
+          "max_participants": 6
+        }
+      }' /></li>
       <li><a href="#" class="action" onclick="actionClick(this)">Read itinerary item (webrtc)</a><input type="hidden" name="action" value="admin_item_read" /><input type="hidden" name="payload" value='{
         "id": "cREtpfUXYiS8wdSSDELV",
         "type": "webrtc"
@@ -380,6 +391,16 @@
           "participants": [
             "67ac40f3-8a49-4188-8fc3-d9608297ef55"
           ]
+        }
+      }' /></li>
+      <li><a href="#" class="action" onclick="actionClick(this)">Webrtc start - initiate an instant call and notify via email</a><input type="hidden" name="action" value="client_webrtc_start" /><input type="hidden" name="payload" value='{
+        "id": "YfpkOVBwHvBdKZ5PDfNP",
+        "data": {
+          "emails": [
+            "67ac40f3-8a49-4188-8fc3-d9608297ef55"
+          ],
+          "register": true,
+          "generator": "memorable"
         }
       }' /></li>
       <li><a href="#" class="action" onclick="actionClick(this)">Webrtc assign as operator</a><input type="hidden" name="action" value="client_webrtc_assign" /><input type="hidden" name="payload" value='{
@@ -559,7 +580,7 @@
           gateway: "http://localhost:8880"
         },
         gcp: {
-          auth: "https://api.extream.app/auth",
+          auth: "https://auth.extream.app",
           gateway: "https://gateway.extream.app"
         },
         alpha_gcp: {
