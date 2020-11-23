@@ -675,6 +675,35 @@ const actions = {
           }
         },
       },
+      add: {
+        response (user, payload) {
+          if (payload.data.emails) {
+            push('ex-notification', {
+              method: 'email',
+              recipients: payload.data.emails,
+              template: 'webrtc-invite',
+              payload: {
+                content: {
+                  title: payload.data.title,
+                  link: `${payload.data.baseURL}/${payload.data.instance}`,
+                  from: `${user.firstName} ${user.lastName}`,
+                },
+                itemId: payload.id,
+                instanceId: payload.data.instance,
+                itemType: 'webrtc',
+                onComplete: 'addParticipant',
+                register: payload.data.register,
+              },
+              user,
+            });
+          } else if (payload.data.participants) {
+            // each user in the list of contacts needs notifying
+            payload.data.participants.forEach((contact) => {
+              io.to(contact).emit('consumer_webrtc_incoming', { ...payload });
+            });
+          }
+        },
+      },
     },
     poll: {
       // listener: {
@@ -744,7 +773,6 @@ function push(
 ) {
   data.source = source;
   data.eventId = eventId;
-  console.log(JSON.stringify(data));
   async function publishMessage() {
     const dataBuffer = Buffer.from(JSON.stringify(data));
 
