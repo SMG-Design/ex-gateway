@@ -676,6 +676,13 @@ const actions = {
         },
       },
       add: {
+        prepare (user, payload) {
+          if (payload.data.emails) {
+            // no participants so send an empty array and allow notification service to handle it
+            payload.data.participants = [];
+          }
+          return payload;
+        },
         response (user, payload) {
           if (payload.data.emails) {
             push('ex-notification', {
