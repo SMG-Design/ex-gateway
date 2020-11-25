@@ -581,7 +581,7 @@ const actions = {
           payload.data.sent = new Date();
           payload.data.from = user;
           if (payload.data.generator && payload.data.generator === 'memorable') {
-            payload.data.instance = xkpasswd({complexity: 2, separators: '-'})
+            payload.data.instance = xkpasswd({complexity: 2, separators: '-', wordList: __dirname + '/memorable-words.json'});
           } else {
             payload.data.instance = uuidv4();
           }
