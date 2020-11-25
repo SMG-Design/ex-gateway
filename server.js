@@ -608,7 +608,7 @@ const actions = {
                   content: {
                     title: payload.data.title,
                     link: `${payload.data.baseURL}/${payload.data.instance}`,
-                    from: `${user.firstName} ${user.lastName}`,
+                    from: (user.fields.displayName) ? user.fields.displayName : (user.firstName) ? `${user.firstName} ${user.lastName}` : user.username,
                   },
                   itemId: payload.id,
                   instanceId: payload.data.instance,
@@ -693,7 +693,7 @@ const actions = {
                 content: {
                   title: payload.data.title,
                   link: `${payload.data.baseURL}/${payload.data.instance}`,
-                  from: `${user.firstName} ${user.lastName}`,
+                  from: (user.fields.displayName) ? user.fields.displayName : (user.firstName) ? `${user.firstName} ${user.lastName}` : user.username,
                 },
                 itemId: payload.id,
                 instanceId: payload.data.instance,
