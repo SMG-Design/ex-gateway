@@ -826,7 +826,7 @@ function pull(
     if (actions[body.domain][body.action][body.command].response) {
       actions[body.domain][body.action][body.command].response(body.user, body.payload);
     }
-    io.in(body.user.id).emit(`${body.domain}_${body.action}_${body.command}`, body);
+    io.in(body.user.id).emit(`${body.payload.correlationId || `${body.domain}_${body.action}_${body.command}`}`, body);
     message.ack();
   };
   subscription.on('message', messageHandler);
@@ -999,9 +999,9 @@ io.on('connection', async (socket) => {
               const messageId = await push(topic, { domain, action, command, payload, user, socketId: socket.id }, user.eventId);
               console.log(messageId);
               console.log(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
-              socket.emit(`${domain}_${action}_${command}`, { status: 202, topic, messageId });
+              socket.emit(`${payload.correlationId || `${domain}_${action}_${command}`}`, { status: 202, topic, messageId });
             } else {
-              socket.emit(`${domain}_${action}_${command}`, { status: 200, payload: await commandProps.compute(socket, user, payload) });
+              socket.emit(`${payload.correlationId || `${domain}_${action}_${command}`}`, { status: 200, payload: await commandProps.compute(socket, user, payload) });
             }
             await logEvent({domain, action, command, payload, topic, success: true}, {token, user: exAuthUser}, socket.id);
           } catch (error) {

@@ -641,6 +641,9 @@
             socket.on(`authorized`, displayResp);
             socket.on(`unauthorized`, displayResp);
             socket.on(`mfa`, displayResp);
+            socket.on('reconnect', (attempt) => {
+              socket.emit(`authorize`, { method: 'oauth2', token: env.access_token });
+            });
           }
         } catch (error) {
           document.getElementById('authResponse').innerHTML = error;
