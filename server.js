@@ -266,7 +266,12 @@ const actions = {
       send: {
         prepare (user, payload) {
           payload.data.sent = new Date();
-          payload.data.from = user;
+          payload.data.from = {
+            id: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            user_type: user.user_type,
+          };
           payload.data.uuid = uuidv4();
           return payload;
         },
@@ -505,10 +510,18 @@ const actions = {
           user.visible = visibility;
           socket.user = JSON.stringify(user);
           if (user.visible) {
-            socket.to(`${user.eventId}`).emit(`consumer_online_join`, {
+            socket.to(`${user.eventId}_audience`).to(`${user.eventId}_actor`).emit(`consumer_online_join`, {
               type: user.user_type,
               id: user.id,
-              user: (({ email, ...user }) => user)(user),
+              user: {
+                firstName: user.firstName,
+                lastName: user.lastName,
+              },
+            });
+            socket.to(`${user.eventId}_crew`).to(`${user.eventId}_chief`).emit(`consumer_online_join`, {
+              type: user.user_type,
+              id: user.id,
+              user,
             });
           } else {
             socket.to(`${user.eventId}`).emit(`consumer_online_leave`, {
@@ -895,10 +908,18 @@ io.on('reconnect', async (socket) => {
     console.log(exauthUser.user_type);
     exauthUser.visible = true;
     socket.user = JSON.stringify(exauthUser);
-    socket.to(`${exauthUser.eventId}`).emit(`consumer_online_join`, {
+    socket.to(`${exauthUser.eventId}_audience`).to(`${exauthUser.eventId}_actor`).emit(`consumer_online_join`, {
       type: exauthUser.user_type,
       id: exauthUser.id,
-      user: (({ email, ...user }) => user)(exauthUser),
+      user: {
+        firstName: exauthUser.firstName,
+        lastName: exauthUser.lastName,
+      },
+    });
+    socket.to(`${exauthUser.eventId}_crew`).to(`${exauthUser.eventId}_chief`).emit(`consumer_online_join`, {
+      type: exauthUser.user_type,
+      id: exauthUser.id,
+      user: exauthUser,
     });
   } catch (error) {
     console.log(error);
@@ -925,10 +946,18 @@ io.on('connection', async (socket) => {
         user.visible = visibility || true;
         socket.user = JSON.stringify(user);
         if (user.visible) {
-          socket.to(`${user.eventId}`).emit(`consumer_online_join`, {
+          socket.to(`${user.eventId}_audience`).to(`${user.eventId}_actor`).emit(`consumer_online_join`, {
             type: user.user_type,
             id: user.id,
-            user: (({ email, ...user }) => user)(user),
+            user: {
+              firstName: user.firstName,
+              lastName: user.lastName,
+            },
+          });
+          socket.to(`${user.eventId}_crew`).to(`${user.eventId}_chief`).emit(`consumer_online_join`, {
+            type: user.user_type,
+            id: user.id,
+            user
           });
         }
       } catch (error) {
