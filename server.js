@@ -275,6 +275,37 @@ const actions = {
           payload.data.uuid = uuidv4();
           return payload;
         },
+        response (user, { id, ...data }, error) {
+          if (error) {
+            io.to(user.id).emit('consumer_chat_receive', { id, ...data, error });
+          } else if (data.instance) {
+            io.to(data.instance).emit('consumer_chat_receive', { id, ...data });
+          } else if (data.moderators) {
+            // user needs to see their own messages
+            let sentAll = false;
+            if (!data.moderators.includes(user.id)) {
+              io.to(user.id).emit('consumer_chat_receive', { id, ...data });
+            } else if ((!data.parent && data.moderators.includes(user.id)) || (data.private === false || data.private === 'false')) {
+              // send to all as its a global message from the moderators or public parent message
+              if (data.parent) {
+                io.to(id).emit('consumer_chat_receive', { id, ...data.parent_message });
+              }
+              io.to(id).emit('consumer_chat_receive', { id, ...data });
+              sentAll = true;
+            }
+            if (!sentAll) {
+              if (data.requester) {
+                // this is a reply to the sender
+                io.to(data.requester.id).emit('consumer_chat_receive', { id, ...data });
+              }
+              data.moderators.forEach((moderator) => {
+                io.to(moderator).emit('consumer_chat_receive', { id, ...data });
+              });
+            }
+          } else {
+            io.to(id).emit('consumer_chat_receive', { id, ...data });
+          }
+        },
         callback (socket, { id, data }, user) {
           if (data.instance) {
             io.to(data.instance).emit('consumer_chat_receive', { id, ...data });
@@ -844,7 +875,7 @@ function pull(
     }
     // run the response if found for this action
     if (actions[body.domain][body.action][body.command].response) {
-      actions[body.domain][body.action][body.command].response(body.user, body.payload);
+      actions[body.domain][body.action][body.command].response(body.user, body.payload, body.error);
     }
     io.in(body.user.id).emit(`${body.payload.correlationId || `${body.domain}_${body.action}_${body.command}`}`, body);
     message.ack();
