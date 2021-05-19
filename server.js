@@ -473,6 +473,7 @@ const actions = {
                           userArr[usersObj[id].id] = {
                             firstName: usersObj[id].firstName,
                             lastName: usersObj[id].lastName,
+                          };
                         }
                       }
                     }
