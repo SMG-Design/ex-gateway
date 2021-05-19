@@ -467,7 +467,13 @@ const actions = {
                     const usersObj = JSON.parse(users);
                     for (let id in usersObj) {
                       if (!userArr[usersObj[id].id] && usersObj[id].visible) {
-                        userArr[usersObj[id].id] = (({ email, ...user }) => user)(usersObj[id]);
+                        if (user.user_type === 'crew' || user.user_type === 'chief') {
+                          userArr[usersObj[id].id] = (({ email, ...user }) => user)(usersObj[id]);
+                        } else {
+                          userArr[usersObj[id].id] = {
+                            firstName: usersObj[id].firstName,
+                            lastName: usersObj[id].lastName,
+                        }
                       }
                     }
                   });
