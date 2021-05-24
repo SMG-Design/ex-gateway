@@ -219,16 +219,12 @@ const actions = {
     },
     chat: {
       get: {
-        prepare (user, payload) {
-          console.log('chat request received', payload.data.correlationId, Date.now());
-        },
         callback(socket, { id, data }) {
           if (data && data.instance) {
             socket.join(data.instance);
           } else {
             socket.join(id);
           }
-          console.log('chat request sent', data.correlationId, Date.now());
         }
       },
       start: {
@@ -869,7 +865,6 @@ function pull(
   const messageHandler = message => {
     messageCount += 1;
     const body = message.data ? JSON.parse(Buffer.from(message.data, 'base64').toString()) : null;
-    console.log('Message sent at:', body.returned || Date.now())
     console.log('Received message:', body.payload.correlationId || message.id, 'Processed at:', Date.now());
     // console.log(`body:`, body);
     if (!body.user) {
